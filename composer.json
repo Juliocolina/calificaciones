@@ -1,0 +1,23 @@
+{
+    "name": "colinajulio/sys_mision-sucre",
+    "description": "Sistema de Carga de Notas",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Colinajulio\\SysMisionSucre\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Colinajulio-a11",
+            "email": "juiocolinax@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^8.0",
+        "phpmailer/phpmailer": "^6.10",
+        "dompdf/dompdf": "^3.1"
+    }
+}

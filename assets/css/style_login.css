@@ -1,0 +1,90 @@
+body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-content {
+            margin-top: 40px;
+        }
+        .login-logo img {
+            max-width: 100px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px #00eaff80);
+        }
+        .sistema-titulo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px #00000040;
+        }
+        .sistema-desc {
+            font-size: 1.05rem;
+            color: #e0e0e0;
+            margin-bottom: 25px;
+            text-shadow: 0 1px 6px #00000030;
+        }
+        .login-form {
+            background: rgba(255,255,255,0.97);
+            border-radius: 18px;
+            padding: 35px 30px 25px 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+            border: 1px solid rgba(255,255,255,0.18);
+            backdrop-filter: blur(2px);
+        }
+        .login-form label {
+            color: #1e3c72;
+            font-weight: 500;
+        }
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #b0bec5;
+            background: #f7fafd;
+            font-size: 1.05em;
+        }
+        .btn-success {
+            background: linear-gradient(90deg, #00eaff 0%, #2a5298 100%);
+            border: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 8px #00eaff40;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .btn-success:hover {
+            background: linear-gradient(90deg, #2a5298 0%, #00eaff 100%);
+        }
+        .text-muted {
+            color: #b0bec5 !important;
+        }
+        .alert-danger {
+            border-radius: 8px;
+        }
+        @media (max-width: 576px) {
+            .login-form {
+                padding: 20px 10px 15px 10px;
+            }
+        }
+        /* Puedes agregar esto en assets/css/style_login.css o en un <style> en tu register.php */
+        .boton-login {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 0 4px 4px 0;
+            padding: 0.375rem 1rem;
+            font-size: 1rem;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s, box-shadow 0.2s;
+            box-shadow: 0 2px 8px rgba(40,167,69,0.08);
+        }
+        .boton-login:hover, .boton-login:focus {
+            background: #218838;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(40,167,69,0.15);
+            outline: none;
+        }

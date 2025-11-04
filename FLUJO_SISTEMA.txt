@@ -1,0 +1,320 @@
+================================================================================
+                    FLUJO DEL SISTEMA MISIÓN SUCRE - GUÍA DE USUARIO
+================================================================================
+
+================================================================================
+                                ¿QUÉ ES EL SISTEMA?
+================================================================================
+
+El Sistema Misión Sucre es una plataforma web que gestiona la educación universitaria
+en las aldeas universitarias de Venezuela. Permite administrar estudiantes, profesores,
+materias, inscripciones y graduaciones de forma organizada y eficiente.
+
+================================================================================
+                                LOS 4 ROLES DEL SISTEMA
+================================================================================
+
+1. 👑 ADMINISTRADOR
+   - Es el "jefe" del sistema
+   - Puede hacer TODO en el sistema
+   - Crea usuarios, aldeas, PNFs, materias
+   - Asigna datos académicos a estudiantes
+   - Gradúa estudiantes manualmente
+
+2. 🏛️ COORDINADOR
+   - Administra UNA aldea específica
+   - Ve solo datos de SU aldea
+   - Gestiona estudiantes y profesores de su aldea
+   - Crea ofertas académicas para su aldea
+   - Inscribe estudiantes en materias
+
+3. 👨‍🏫 PROFESOR
+   - Enseña materias específicas
+   - Ve solo SUS estudiantes inscritos
+   - Carga notas y calificaciones
+   - Consulta información de sus materias
+   - Actualiza su perfil personal
+
+4. 🎓 ESTUDIANTE
+   - Ve sus propias inscripciones
+   - Consulta sus calificaciones
+   - Actualiza su perfil personal
+   - Ve su historial académico
+
+================================================================================
+                            FLUJO COMPLETO DEL SISTEMA
+================================================================================
+
+📋 PASO 1: CONFIGURACIÓN INICIAL (Solo Administrador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Admin crea las ALDEAS (ubicaciones físicas)             │
+   │ 2. Admin crea los PNFs (carreras universitarias)           │
+   │ 3. Admin crea TRAYECTOS (I, II, III, IV)                   │
+   │ 4. Admin crea TRIMESTRES (períodos académicos)             │
+   │ 5. Admin crea MATERIAS para cada PNF                       │
+   └─────────────────────────────────────────────────────────────┘
+
+👥 PASO 2: CREACIÓN DE USUARIOS (Solo Administrador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Admin crea usuarios COORDINADORES                       │
+   │ 2. Admin crea usuarios PROFESORES                          │
+   │ 3. Admin crea usuarios ESTUDIANTES                         │
+   │ 4. Cada usuario recibe: cédula + contraseña inicial        │
+   └─────────────────────────────────────────────────────────────┘
+
+🏠 PASO 3: ASIGNACIÓN DE ALDEAS (Administrador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Admin asigna cada COORDINADOR a una aldea específica    │
+   │ 2. Admin asigna cada PROFESOR a una aldea específica       │
+   │ 3. Admin asigna cada ESTUDIANTE a una aldea específica     │
+   └─────────────────────────────────────────────────────────────┘
+
+📝 PASO 4: COMPLETAR PERFILES (Cada Usuario)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ COORDINADOR: Completa datos personales + fechas gestión    │
+   │ PROFESOR: Completa datos personales + especialidad         │
+   │ ESTUDIANTE: Completa datos personales + información origen │
+   └─────────────────────────────────────────────────────────────┘
+
+🎯 PASO 5: ASIGNACIÓN ACADÉMICA (Solo Administrador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ Para cada ESTUDIANTE, Admin asigna:                        │
+   │ • PNF (carrera que estudia)                                │
+   │ • TRAYECTO actual (I, II, III o IV)                        │
+   │ • TRIMESTRE actual (I, II o III)                           │
+   │ • Código de estudiante                                     │
+   │ • Estado académico (activo/congelado/retirado/graduado)    │
+   └─────────────────────────────────────────────────────────────┘
+
+📚 PASO 6: CREACIÓN DE OFERTAS (Coordinador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Coordinador crea OFERTA ACADÉMICA:                      │
+   │    - Selecciona PNF + Trayecto + Trimestre + Tipo          │
+   │ 2. Coordinador asigna MATERIAS a la oferta                 │
+   │ 3. Coordinador asigna PROFESORES a cada materia            │
+   └─────────────────────────────────────────────────────────────┘
+
+✍️ PASO 7: INSCRIPCIONES (Coordinador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Coordinador busca estudiante por cédula                 │
+   │ 2. Sistema valida que estudiante puede inscribirse:        │
+   │    ✓ Perfil académico completo                             │
+   │    ✓ PNF/Trayecto/Trimestre coincide con oferta           │
+   │    ✓ Máximo 2 materias reprobadas (arrastre)              │
+   │ 3. Coordinador selecciona materias e inscribe              │
+   └─────────────────────────────────────────────────────────────┘
+
+📊 PASO 8: CARGA DE NOTAS (Profesor)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 1. Profesor ve SUS estudiantes inscritos                   │
+   │ 2. Profesor carga notas por materia (0-20 puntos)          │
+   │ 3. Sistema calcula automáticamente:                        │
+   │    - Nota final (mejor de múltiples evaluaciones)          │
+   │    - Estado: Aprobado (≥12) o Reprobado (<12)             │
+   └─────────────────────────────────────────────────────────────┘
+
+🎓 PASO 9: GRADUACIONES (Solo Administrador)
+   ┌─────────────────────────────────────────────────────────────┐
+   │ Cuando estudiante completa trayectos:                      │
+   │ • TRAYECTO I + II = Graduación TSU                         │
+   │ • TRAYECTO III + IV = Graduación Licenciado               │
+   │                                                            │
+   │ Admin puede graduar manualmente:                           │
+   │ 1. Selecciona tipo: TSU o Licenciado                      │
+   │ 2. Sistema registra graduación en historial               │
+   │ 3. TSU: estudiante sigue activo para continuar            │
+   │ 4. Licenciado: estudiante cambia a estado "graduado"      │
+   └─────────────────────────────────────────────────────────────┘
+
+================================================================================
+                        ¿QUÉ PUEDE HACER CADA ROL?
+================================================================================
+
+👑 ADMINISTRADOR - "El que controla todo"
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Crear y gestionar: aldeas, PNFs, trayectos, trimestres, materias        │
+│ ✅ Crear usuarios (coordinadores, profesores, estudiantes)                 │
+│ ✅ Asignar aldeas a coordinadores y profesores                             │
+│ ✅ Completar datos académicos de estudiantes                               │
+│ ✅ Graduar estudiantes (TSU y Licenciado)                                  │
+│ ✅ Ver TODOS los datos del sistema                                         │
+│ ✅ Generar reportes completos                                              │
+│ ❌ NO puede: cargar notas (eso es del profesor)                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+🏛️ COORDINADOR - "El administrador de su aldea"
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Ver solo datos de SU aldea asignada                                     │
+│ ✅ Crear ofertas académicas para su aldea                                  │
+│ ✅ Asignar materias a ofertas                                              │
+│ ✅ Asignar profesores a materias                                           │
+│ ✅ Inscribir estudiantes en materias                                       │
+│ ✅ Ver estudiantes y profesores de su aldea                               │
+│ ✅ Gestionar inscripciones de su aldea                                     │
+│ ❌ NO puede: crear usuarios, cambiar aldeas, graduar estudiantes           │
+│ ❌ NO puede: ver datos de otras aldeas                                     │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+👨‍🏫 PROFESOR - "El que enseña y califica"
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Ver solo SUS estudiantes inscritos en SUS materias                     │
+│ ✅ Cargar y actualizar notas de sus estudiantes                           │
+│ ✅ Ver calificaciones de sus materias                                      │
+│ ✅ Actualizar su perfil personal                                           │
+│ ✅ Ver su horario y asignaciones                                           │
+│ ❌ NO puede: inscribir estudiantes, crear ofertas                          │
+│ ❌ NO puede: ver estudiantes de otros profesores                           │
+│ ❌ NO puede: cambiar datos académicos de estudiantes                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+🎓 ESTUDIANTE - "El que estudia y consulta"
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ✅ Ver SUS propias inscripciones                                           │
+│ ✅ Consultar SUS calificaciones                                            │
+│ ✅ Ver SU historial académico                                              │
+│ ✅ Actualizar SU perfil personal                                           │
+│ ✅ Ver SU progreso académico                                               │
+│ ❌ NO puede: inscribirse solo (lo hace el coordinador)                     │
+│ ❌ NO puede: ver datos de otros estudiantes                                │
+│ ❌ NO puede: cambiar sus datos académicos                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+                            EJEMPLO PRÁCTICO DE USO
+================================================================================
+
+📖 CASO: Juan quiere estudiar Informática en la Aldea Miranda
+
+1️⃣ PREPARACIÓN (Admin):
+   • Admin crea Aldea "Miranda"
+   • Admin crea PNF "Informática" 
+   • Admin crea materias: "Programación I", "Matemática I", etc.
+   • Admin crea usuario Juan (estudiante)
+
+2️⃣ ASIGNACIÓN (Admin):
+   • Admin asigna Juan a Aldea Miranda
+   • Admin asigna Juan: PNF Informática, Trayecto I, Trimestre I
+   • Admin crea usuario María (coordinadora) para Aldea Miranda
+   • Admin crea usuario Pedro (profesor) para Aldea Miranda
+
+3️⃣ PERFILES:
+   • Juan completa sus datos personales
+   • María completa sus datos de coordinadora
+   • Pedro completa sus datos de profesor
+
+4️⃣ OFERTA (María - Coordinadora):
+   • María crea oferta: Informática + Trayecto I + Trimestre I
+   • María asigna materias: "Programación I", "Matemática I"
+   • María asigna Pedro a "Programación I"
+
+5️⃣ INSCRIPCIÓN (María - Coordinadora):
+   • María busca a Juan por cédula
+   • Sistema valida que Juan puede inscribirse
+   • María inscribe Juan en "Programación I" y "Matemática I"
+
+6️⃣ CLASES Y NOTAS (Pedro - Profesor):
+   • Pedro ve que Juan está inscrito en su materia
+   • Pedro carga notas: Examen 1: 15, Examen 2: 18
+   • Sistema calcula nota final: 18 (la mejor)
+   • Juan aprueba "Programación I" (nota ≥ 12)
+
+7️⃣ CONSULTA (Juan - Estudiante):
+   • Juan entra al sistema
+   • Juan ve sus inscripciones actuales
+   • Juan consulta sus calificaciones: "Programación I: 18 - Aprobado"
+
+8️⃣ GRADUACIÓN (Admin):
+   • Después de completar Trayecto I y II
+   • Admin gradúa Juan como TSU
+   • Juan puede continuar a Trayecto III para Licenciatura
+
+================================================================================
+                                FLUJO DE NAVEGACIÓN
+================================================================================
+
+🔐 INICIO DE SESIÓN:
+   1. Usuario ingresa cédula y contraseña
+   2. Sistema valida credenciales
+   3. Redirige según rol a página principal
+
+🏠 PÁGINA PRINCIPAL (Dashboard):
+   • ADMIN: Ve resumen completo del sistema
+   • COORDINADOR: Ve resumen de su aldea
+   • PROFESOR: Ve sus materias y estudiantes
+   • ESTUDIANTE: Ve sus inscripciones y notas
+
+📱 MENÚ DE NAVEGACIÓN (según rol):
+   • Cada rol ve solo las opciones que puede usar
+   • Menú se adapta automáticamente al rol del usuario
+   • Acceso directo a funciones principales
+
+================================================================================
+                            VALIDACIONES DEL SISTEMA
+================================================================================
+
+🛡️ SEGURIDAD:
+   ✅ Solo usuarios autenticados pueden acceder
+   ✅ Cada rol ve solo lo que le corresponde
+   ✅ Coordinadores limitados a su aldea
+   ✅ Profesores limitados a sus materias
+   ✅ Estudiantes limitados a sus datos
+
+📋 VALIDACIONES ACADÉMICAS:
+   ✅ Estudiante debe tener perfil completo para inscribirse
+   ✅ PNF/Trayecto/Trimestre debe coincidir exactamente
+   ✅ Máximo 2 materias reprobadas para inscribirse
+   ✅ Solo estudiantes activos pueden inscribirse
+   ✅ No se pueden duplicar graduaciones del mismo tipo
+
+📊 VALIDACIONES DE DATOS:
+   ✅ Todos los formularios tienen validación en tiempo real
+   ✅ Campos obligatorios claramente marcados
+   ✅ Formatos específicos (cédula, email, teléfono)
+   ✅ Confirmaciones para acciones importantes
+
+================================================================================
+                                BENEFICIOS DEL SISTEMA
+================================================================================
+
+👥 PARA ADMINISTRADORES:
+   • Control total y centralizado
+   • Reportes automáticos
+   • Gestión eficiente de usuarios
+   • Seguimiento completo del proceso académico
+
+🏛️ PARA COORDINADORES:
+   • Gestión autónoma de su aldea
+   • Proceso de inscripción simplificado
+   • Control de ofertas académicas
+   • Seguimiento de estudiantes
+
+👨‍🏫 PARA PROFESORES:
+   • Carga de notas simplificada
+   • Acceso directo a sus estudiantes
+   • Cálculo automático de calificaciones
+   • Historial completo de evaluaciones
+
+🎓 PARA ESTUDIANTES:
+   • Acceso 24/7 a sus calificaciones
+   • Historial académico completo
+   • Información actualizada de inscripciones
+   • Proceso transparente y organizado
+
+================================================================================
+                                RESUMEN FINAL
+================================================================================
+
+El Sistema Misión Sucre automatiza completamente la gestión académica universitaria:
+
+🔄 FLUJO SIMPLE:
+   Configuración → Usuarios → Perfiles → Ofertas → Inscripciones → Notas → Graduación
+
+👥 ROLES CLAROS:
+   Admin (controla todo) → Coordinador (gestiona aldea) → Profesor (enseña) → Estudiante (estudia)
+
+🎯 OBJETIVO:
+   Facilitar la educación universitaria en las aldeas de Venezuela con un sistema
+   organizado, seguro y fácil de usar para todos los involucrados.
+
+¡El sistema está diseñado para que cada usuario haga solo lo que necesita hacer,
+de manera simple y eficiente!
