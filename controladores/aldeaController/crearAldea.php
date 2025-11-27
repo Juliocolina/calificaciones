@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+
+verificarRol(['admin']);
 $conn = conectar();
 
 

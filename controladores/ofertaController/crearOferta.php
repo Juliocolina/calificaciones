@@ -1,6 +1,6 @@
 <?php
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 require_once __DIR__ . '/../../config/conexion.php';
-require_once __DIR__ . '/../../controladores/hellpers/auth.php'; 
 
 verificarSesion();
 $conn = conectar();
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// Obtener aldea del coordinador si es coordinador
+// Obtener aldea del coordinador o del formulario
 $usuario_actual = $_SESSION['usuario'];
 $aldea_id = null;
 
@@ -28,6 +28,13 @@ if ($usuario_actual['rol'] === 'coordinador') {
     
     if (!$aldea_id) {
         redirigir('error', 'No se pudo determinar la aldea del coordinador.', $redirect_view);
+        exit;
+    }
+} else {
+    // Para admin, obtener aldea del formulario
+    $aldea_id = intval($_POST['aldea_id'] ?? 0);
+    if ($aldea_id <= 0) {
+        redirigir('error', 'Debe seleccionar una aldea.', $redirect_view);
         exit;
     }
 }
@@ -46,8 +53,8 @@ $fecha_fin_excepcion    = !empty($_POST['fecha_fin_excepcion']) ? trim($_POST['f
 // --- 2. INICIO DE VALIDACIONES ---
 
 // 2.1. Validar campos obligatorios
-if ($pnf_id <= 0 || $trayecto_id <= 0 || $trimestre_id <= 0 || empty($tipo_oferta)) {
-    redirigir('error', 'Debe seleccionar un PNF, Trayecto, Trimestre y Tipo de Oferta.', $redirect_view);
+if ($pnf_id <= 0 || $trayecto_id <= 0 || $trimestre_id <= 0 || empty($tipo_oferta) || $aldea_id <= 0) {
+    redirigir('error', 'Debe seleccionar una Aldea, PNF, Trayecto, Trimestre y Tipo de Oferta.', $redirect_view);
     exit;
 }
 
@@ -69,24 +76,41 @@ if ($fecha_inicio_excepcion && $fecha_fin_excepcion && (strtotime($fecha_inicio_
 }
 
 
-// 2.4. Verificar unicidad de la oferta (CRÍTICO: Basado en los campos UNIQUE KEY + aldea)
+// 2.4. Verificar que los IDs existen y son válidos
 try {
-    $sql_check = "SELECT id FROM oferta_academica WHERE pnf_id = ? AND trayecto_id = ? AND trimestre_id = ? AND tipo_oferta = ?";
-    $params_check = [$pnf_id, $trayecto_id, $trimestre_id, $tipo_oferta];
-    
-    // Si es coordinador, verificar también por aldea
-    if ($aldea_id) {
-        $sql_check .= " AND aldea_id = ?";
-        $params_check[] = $aldea_id;
+    // Verificar que el PNF existe y pertenece a la aldea
+    $stmt_pnf = $conn->prepare("SELECT id FROM pnfs WHERE id = ? AND aldea_id = ?");
+    $stmt_pnf->execute([$pnf_id, $aldea_id]);
+    if (!$stmt_pnf->fetch()) {
+        redirigir('error', 'El PNF seleccionado no existe o no pertenece a la aldea seleccionada.', $redirect_view);
+        exit;
     }
     
-    $stmt_oferta = $conn->prepare($sql_check);
-    $stmt_oferta->execute($params_check);
+    // Verificar que el trayecto existe
+    $stmt_trayecto = $conn->prepare("SELECT id FROM trayectos WHERE id = ?");
+    $stmt_trayecto->execute([$trayecto_id]);
+    if (!$stmt_trayecto->fetch()) {
+        redirigir('error', 'El trayecto seleccionado no existe.', $redirect_view);
+        exit;
+    }
     
-    if ($stmt_oferta->rowCount() > 0) {
+    // Verificar que el trimestre existe
+    $stmt_trimestre = $conn->prepare("SELECT id FROM trimestres WHERE id = ?");
+    $stmt_trimestre->execute([$trimestre_id]);
+    if (!$stmt_trimestre->fetch()) {
+        redirigir('error', 'El trimestre seleccionado no existe.', $redirect_view);
+        exit;
+    }
+    
+    // Verificar unicidad de la oferta
+    $stmt_oferta = $conn->prepare("SELECT id FROM oferta_academica WHERE pnf_id = ? AND trayecto_id = ? AND trimestre_id = ? AND tipo_oferta = ? AND aldea_id = ?");
+    $stmt_oferta->execute([$pnf_id, $trayecto_id, $trimestre_id, $tipo_oferta, $aldea_id]);
+    
+    if ($stmt_oferta->fetch()) {
         redirigir('error', "Ya existe una oferta para este PNF, Trayecto, Trimestre y Tipo ({$tipo_oferta}) en esta aldea.", $redirect_view);
         exit;
     }
+    
 } catch (PDOException $e) {
     redirigir('error', 'Error en la verificación de datos: ' . $e->getMessage(), $redirect_view);
     exit;

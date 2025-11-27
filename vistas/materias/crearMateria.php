@@ -73,11 +73,11 @@ $conn = conectar();
                                     <label for="duracion"><i class="fa fa-clock"></i> Duración *</label>
                                     <select name="duracion" id="duracion" class="form-control" required>
                                         <option value="">Seleccione la duración</option>
-                                        <option value="anual">Anual</option>
-                                        <option value="semestral">Semestral</option>
                                         <option value="trimestral">Trimestral</option>
-                                        <option value="intensivo">Intensivo</option>
+                                        <option value="bimestral">Bimestral</option>
+                                        <option value="anual">Anual</option>
                                     </select>
+                                    <small class="form-text text-muted">Define cuántos trimestres dura la materia</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -111,7 +111,7 @@ $conn = conectar();
                             <button type="submit" class="btn btn-warning btn-lg mr-2">
                                 <i class="fa fa-save"></i> Registrar Materia
                             </button>
-                            <a href="verMaterias.php" class="btn btn-secondary btn-lg">
+                            <a href="materiasPorPnf.php" class="btn btn-secondary btn-lg">
                                 <i class="fa fa-arrow-left"></i> Cancelar
                             </a>
                         </div>

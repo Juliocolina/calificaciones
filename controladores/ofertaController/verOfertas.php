@@ -37,6 +37,7 @@ try {
             oa.id,
             oa.estatus,
             oa.aldea_id,
+            oa.tipo_oferta,
             p.nombre AS nombre_pnf,
             t.slug AS nombre_trayecto, 
             tr.nombre AS nombre_trimestre,

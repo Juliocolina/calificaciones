@@ -83,10 +83,10 @@ require_once __DIR__ . '/../../controladores/profesorController/verProfesores.ph
                   
                             <thead class="thead-dark">
                                     <tr>
-                                        <th>ID</th>
                                         <th>Nombre</th>
                                         <th>Apellido</th>
                                         <th>Cedula</th>
+                                        <th>Aldea</th>
                                         <th>PNF</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
@@ -94,40 +94,35 @@ require_once __DIR__ . '/../../controladores/profesorController/verProfesores.ph
                                 <tbody>
                                 <?php foreach ($profesores as $profesor): ?>
                                     <tr>
-                                        <td><?= $profesor['id'] ?></td>
                                         <td><?= htmlspecialchars($profesor['nombre']) ?></td>
                                         <td><?= htmlspecialchars($profesor['apellido']) ?></td>
                                         <td><?= htmlspecialchars($profesor['cedula']) ?></td>
+                                        <td><?= htmlspecialchars($profesor['aldea_nombre'] ?? 'Sin asignar') ?></td>
                                         <td><?= htmlspecialchars($profesor['pnf_nombre'] ?? 'Sin asignar') ?></td>
                                         <td class="acciones text-center">
-                                           
-                                       <button type="button"
-                                        class="btn btn-sm btn-outline-info"
-                                        title="Ver"
-                                        data-toggle="modal"
-                                        data-target="#modalProfesor<?= $profesor['id'] ?>">
-                                       <i class="fa fa-eye"></i>
-                                       </button>
-
-                                        <form action="editarProfesor.php" method="POST" style="display: inline-block; margin: 0; padding: 0;">
-                                                <input type="hidden" name="id" value="<?= htmlspecialchars($profesor['id']) ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-primary mx-1" title="Editar Profesor">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                        </form>
-
-                                        <a href="../ofertas_materias/asignarMateriasProfesor.php?profesor_id=<?= $profesor['id'] ?>" 
-                                           class="btn btn-sm btn-outline-success mx-1" 
-                                           title="Asignar Materias">
-                                            <i class="fa fa-book"></i>
-                                        </a>
-
-                                       <button class="btn btn-sm btn-outline-danger mx-1" 
-                                               data-toggle="modal" 
-                                               data-target="#modalEliminar<?= $profesor['id'] ?>" 
-                                               title="Eliminar">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
+                                                    Acciones
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <button class="dropdown-item" data-toggle="modal" data-target="#modalProfesor<?= $profesor['id'] ?>">
+                                                        Detalles
+                                                    </button>
+                                                    <form action="editarProfesor.php" method="POST" style="display: inline; width: 100%;">
+                                                        <input type="hidden" name="id" value="<?= htmlspecialchars($profesor['id']) ?>">
+                                                        <button type="submit" class="dropdown-item">
+                                                            Editar
+                                                        </button>
+                                                    </form>
+                                                    <a class="dropdown-item" href="gestionarMaterias.php?profesor_id=<?= $profesor['id'] ?>">
+                                                        Gestionar Materias
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <button class="dropdown-item text-danger" data-toggle="modal" data-target="#modalEliminar<?= $profesor['id'] ?>">
+                                                        <i class="fa fa-trash"></i> Eliminar
+                                                    </button>
+                                                </div>
+                                            </div>
 
                                             <!-- Modal Ver Detalles -->
 <div class="modal fade" id="modalProfesor<?= $profesor['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="modalProfesorLabel<?= $profesor['id'] ?>" aria-hidden="true">
@@ -145,8 +140,22 @@ require_once __DIR__ . '/../../controladores/profesorController/verProfesores.ph
                     <li class="list-group-item">Cédula: <?= htmlspecialchars($profesor['cedula']) ?></li>
                     <li class="list-group-item">Correo: <?= htmlspecialchars($profesor['correo']) ?></li>
                     <li class="list-group-item">Teléfono: <?= htmlspecialchars($profesor['telefono']) ?></li>
+                    <li class="list-group-item">Aldea: <?= htmlspecialchars($profesor['aldea_nombre'] ?? 'Sin asignar') ?></li>
+                    <li class="list-group-item">PNF: <?= htmlspecialchars($profesor['pnf_nombre'] ?? 'Sin asignar') ?></li>
                     <li class="list-group-item">Título: <?= htmlspecialchars($profesor['titulo']) ?></li>
                     <li class="list-group-item">Especialidad: <?= htmlspecialchars($profesor['especialidad']) ?></li>
+                    <li class="list-group-item">
+                        <strong>Materias que imparte:</strong>
+                        <?php if (!empty($profesor['materias'])): ?>
+                            <ul class="mt-2 mb-0">
+                                <?php foreach ($profesor['materias'] as $materia): ?>
+                                    <li><?= htmlspecialchars($materia['nombre']) ?> <small class="text-muted">(<?= htmlspecialchars($materia['pnf_nombre']) ?>)</small></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php else: ?>
+                            <span class="text-muted">No tiene materias asignadas</span>
+                        <?php endif; ?>
+                    </li>
                 </ul>
             </div>
             <div class="modal-footer">
@@ -224,7 +233,7 @@ $(document).ready(function() {
         "pageLength": 10,
         "responsive": true,
         "columnDefs": [
-            { "orderable": false, "targets": [4] } // Desactivar ordenamiento en columna Acciones
+            { "orderable": false, "targets": [5] } // Desactivar ordenamiento en columna Acciones
         ]
     });
 });

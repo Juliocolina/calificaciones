@@ -35,6 +35,7 @@ if ($rol === 'coordinador') {
 }
 if ($rol === 'profesor') {
     $aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $pnfs = $conn->query("SELECT id, nombre FROM pnfs ORDER BY nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
 }
 if ($rol === 'estudiante') {
     $aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
@@ -163,9 +164,44 @@ if ($rol === 'estudiante') {
                             <h5><i class="fa fa-graduation-cap"></i> Datos de Profesor</h5>
                             <table class="table table-borderless">
                                  <tbody>
-                                       
                                     <tr>
-                                        <th style="width: 30%;"><label for="especialidad"><i class="fa fa-book"></i> Especialidad</label></th>
+                                        <th style="width: 30%;"><label for="aldea_readonly"><i class="fa fa-university"></i> Aldea Asignada</label></th>
+                                        <td>
+                                            <?php 
+                                            $aldea_nombre = 'No asignada';
+                                            if (!empty($perfil['aldea_id'])) {
+                                                foreach ($aldeas as $aldea) {
+                                                    if ($aldea['id'] == $perfil['aldea_id']) {
+                                                        $aldea_nombre = $aldea['nombre'];
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <input type="text" class="form-control" value="<?= htmlspecialchars($aldea_nombre) ?>" readonly>
+                                            <small class="text-muted"><i class="fa fa-info-circle"></i> Solo el administrador puede asignar/cambiar la aldea</small>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="pnf_readonly"><i class="fa fa-graduation-cap"></i> PNF Asignado</label></th>
+                                        <td>
+                                            <?php 
+                                            $pnf_nombre = 'No asignado';
+                                            if (!empty($perfil['pnf_id'])) {
+                                                foreach ($pnfs as $pnf) {
+                                                    if ($pnf['id'] == $perfil['pnf_id']) {
+                                                        $pnf_nombre = $pnf['nombre'];
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                            ?>
+                                            <input type="text" class="form-control" value="<?= htmlspecialchars($pnf_nombre) ?>" readonly>
+                                            <small class="text-muted"><i class="fa fa-info-circle"></i> Solo el administrador puede asignar/cambiar el PNF</small>
+                                        </td>
+                                    </tr>       
+                                    <tr>
+                                        <th><label for="especialidad"><i class="fa fa-book"></i> Especialidad</label></th>
                                         <td><input type="text" name="especialidad" id="especialidad" class="form-control" value="<?= htmlspecialchars($perfil['especialidad'] ?? '') ?>" required></td>
                                     </tr>
                                     <tr>

@@ -1,5 +1,15 @@
 <?php
+session_start();
+// Verificar sesión y rol admin
+if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'admin') {
+    header("Location: ../../index.php");
+    exit;
+}
 require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../config/conexion.php';
+
+$conn = conectar();
+$aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <div class="container mt-4">
     <?php if (isset($_GET['exito'])): ?>
@@ -43,6 +53,17 @@ require_once __DIR__ . '/../../models/header.php';
                                    data-nombre="Código del PNF"
                                    required>
                             <small class="form-text text-muted">Formato sugerido: PNF-XXX-##</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="aldea_id"><i class="fa fa-university"></i> Aldea *</label>
+                            <select name="aldea_id" id="aldea_id" class="form-control" required>
+                                <option value="">Seleccione una aldea</option>
+                                <?php foreach ($aldeas as $aldea): ?>
+                                    <option value="<?= $aldea['id'] ?>"><?= htmlspecialchars($aldea['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <small class="form-text text-muted">El PNF pertenecerá a esta aldea específica</small>
                         </div>
                         
                         <div class="form-group">

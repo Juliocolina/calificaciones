@@ -1,25 +1,21 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+
+// Solo redirigir admin sin aldea_id, coordinador puede acceder directamente
+if ($_SESSION['rol'] === 'admin' && !isset($_GET['aldea_id'])) {
+    header('Location: ../aldeas/verAldeas.php');
+    exit;
+}
 
 $conn = conectar();
-$pnfs = [];
 $trayectos = [];
 $trimestres = [];
 $error_message = '';
-$aldea_coordinador = null;
 
 try {
-    // Obtener aldea del coordinador si es coordinador
-    if (isset($_SESSION['usuario']) && $_SESSION['usuario']['rol'] === 'coordinador') {
-        $stmt_coord = $conn->prepare("SELECT a.nombre FROM coordinadores c JOIN aldeas a ON c.aldea_id = a.id WHERE c.usuario_id = ?");
-        $stmt_coord->execute([$_SESSION['usuario']['id']]);
-        $coord_data = $stmt_coord->fetch(PDO::FETCH_ASSOC);
-        $aldea_coordinador = $coord_data['nombre'] ?? null;
-    }
-    
-    // 1. Obtener todos los PNF (ordenados por nombre)
-    $stmt_pnf = $conn->query("SELECT id, nombre FROM pnfs ORDER BY nombre ASC");
-    $pnfs = $stmt_pnf->fetchAll(PDO::FETCH_ASSOC);
+    // Obtener aldeas
+    $aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
 
     // 2. Obtener todos los Trayectos
     // Se usa 'slug' para mostrar al usuario, asumiendo que contiene el nombre legible (Ej: 'TRAYECTO I')
@@ -37,6 +33,10 @@ try {
 } catch (PDOException $e) {
     // Manejo de errores de base de datos
     $error_message = "Error crítico al cargar los datos del formulario: " . htmlspecialchars($e->getMessage());
+    error_log("Error PDO en crearOferta.php: " . $e->getMessage());
+} catch (Exception $e) {
+    $error_message = "Error general: " . htmlspecialchars($e->getMessage());
+    error_log("Error general en crearOferta.php: " . $e->getMessage());
 }
 
 require_once __DIR__ . '/../../models/header.php';
@@ -75,24 +75,82 @@ require_once __DIR__ . '/../../models/header.php';
                     <?php if ($error_message): ?>
                         <div class="alert alert-danger"><?= $error_message ?></div>
                     <?php else: ?>
-                        <?php if ($aldea_coordinador): ?>
-                            <div class="alert alert-info">
-                                <i class="fa fa-info-circle"></i> Esta oferta será creada para la aldea: <strong><?= htmlspecialchars($aldea_coordinador) ?></strong>
-                            </div>
-                        <?php endif; ?>
+
                         <form action="../../controladores/ofertaController/crearOferta.php" method="POST" data-validar-form>
+                            
+                            <?php if ($_SESSION['rol'] === 'admin'): ?>
+                            <div class="form-group">
+                                <label for="aldea_id"><strong>Aldea (*)</strong></label>
+                                <?php 
+                                $aldea_preseleccionada = $_GET['aldea_id'] ?? null;
+                                if ($aldea_preseleccionada): 
+                                    $aldea_seleccionada = null;
+                                    foreach ($aldeas as $aldea) {
+                                        if ($aldea['id'] == $aldea_preseleccionada) {
+                                            $aldea_seleccionada = $aldea;
+                                            break;
+                                        }
+                                    }
+                                ?>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($aldea_seleccionada['nombre'] ?? 'Aldea no encontrada') ?>" readonly>
+                                    <input type="hidden" name="aldea_id" value="<?= htmlspecialchars($aldea_preseleccionada) ?>">
+                                    <small class="form-text text-muted">Aldea preseleccionada desde la vista anterior</small>
+                                <?php else: ?>
+                                    <select name="aldea_id" id="aldea_id" class="form-control" required>
+                                        <option value="">-- Seleccione una Aldea --</option>
+                                        <?php foreach ($aldeas as $aldea): ?>
+                                            <option value="<?= htmlspecialchars($aldea['id']) ?>"><?= htmlspecialchars($aldea['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                <?php endif; ?>
+                            </div>
+                            <?php else: ?>
+                                <?php 
+                                // Consulta directa para coordinador
+                                $coord_query = $conn->prepare("SELECT c.aldea_id, a.nombre FROM coordinadores c JOIN aldeas a ON c.aldea_id = a.id WHERE c.usuario_id = ?");
+                                $coord_query->execute([$_SESSION['usuario_id']]);
+                                $coord_result = $coord_query->fetch(PDO::FETCH_ASSOC);
+                                ?>
+                                <div class="form-group">
+                                    <label><strong>Aldea Asignada</strong></label>
+                                    <input type="text" class="form-control" value="<?= htmlspecialchars($coord_result['nombre'] ?? 'Sin aldea asignada') ?>" readonly>
+                                    <input type="hidden" name="aldea_id" value="<?= $coord_result['aldea_id'] ?? '' ?>">
+                                </div>
+                            <?php endif; ?>
                             
                             <div class="form-group">
                                 <label for="pnf_id"><strong>Programa Nacional de Formación (PNF) (*)</strong></label>
-                                <select name="pnf_id" id="pnf_id" class="form-control" 
-                                        data-validar='{"tipo":"","opciones":{"requerido":true}}'
-                                        data-nombre="PNF" required>
-                                    <option value="">-- Seleccione un PNF --</option>
-                                    <?php foreach ($pnfs as $pnf): ?>
-                                        <option value="<?= htmlspecialchars($pnf['id']) ?>"><?= htmlspecialchars($pnf['nombre']) ?></option>
-                                    <?php endforeach; ?>
+                                <select name="pnf_id" id="pnf_id" class="form-control" required>
+                                    <?php if ($_SESSION['rol'] === 'coordinador'): ?>
+                                        <?php 
+                                        // Obtener PNFs de la aldea del coordinador
+                                        $pnf_query = $conn->prepare("SELECT p.id, p.nombre FROM pnfs p JOIN coordinadores c ON p.aldea_id = c.aldea_id WHERE c.usuario_id = ?");
+                                        $pnf_query->execute([$_SESSION['usuario_id']]);
+                                        $coord_pnfs = $pnf_query->fetchAll(PDO::FETCH_ASSOC);
+                                        ?>
+                                        <option value="">-- Seleccione un PNF --</option>
+                                        <?php foreach ($coord_pnfs as $pnf): ?>
+                                            <option value="<?= htmlspecialchars($pnf['id']) ?>"><?= htmlspecialchars($pnf['nombre']) ?></option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <?php if ($aldea_preseleccionada): ?>
+                                            <?php 
+                                            $pnf_query = $conn->prepare("SELECT id, nombre FROM pnfs WHERE aldea_id = ?");
+                                            $pnf_query->execute([$aldea_preseleccionada]);
+                                            $pnfs_aldea = $pnf_query->fetchAll(PDO::FETCH_ASSOC);
+                                            ?>
+                                            <option value="">-- Seleccione un PNF --</option>
+                                            <?php foreach ($pnfs_aldea as $pnf): ?>
+                                                <option value="<?= htmlspecialchars($pnf['id']) ?>"><?= htmlspecialchars($pnf['nombre']) ?></option>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <option value="">Primero seleccione una aldea</option>
+                                        <?php endif; ?>
+                                    <?php endif; ?>
                                 </select>
                             </div>
+
+
 
                             <div class="form-group">
                                 <label for="trayecto_id"><strong>Trayecto (*)</strong></label>
@@ -180,5 +238,52 @@ require_once __DIR__ . '/../../models/header.php';
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    console.log('JavaScript cargado correctamente');
+    
+    <?php if ($_SESSION['rol'] === 'admin'): ?>
+    // Para admin: cargar PNFs cuando se selecciona aldea
+    $('#aldea_id').on('change', function() {
+        const aldeaId = $(this).val();
+        console.log('Aldea seleccionada:', aldeaId);
+        
+        if (aldeaId) {
+            // Mostrar loading
+            $('#pnf_id').html('<option value="">Cargando PNFs...</option>');
+            
+            $.ajax({
+                url: '../../api/getPnfsByAldea.php',
+                method: 'GET',
+                data: { aldea_id: aldeaId },
+                dataType: 'json',
+                success: function(pnfs) {
+                    console.log('PNFs recibidos:', pnfs);
+                    let options = '<option value="">-- Seleccione un PNF --</option>';
+                    
+                    if (pnfs && pnfs.length > 0) {
+                        pnfs.forEach(function(pnf) {
+                            options += `<option value="${pnf.id}">${pnf.nombre}</option>`;
+                        });
+                    } else {
+                        options = '<option value="">No hay PNFs en esta aldea</option>';
+                    }
+                    
+                    $('#pnf_id').html(options);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al cargar PNFs:', error);
+                    $('#pnf_id').html('<option value="">Error al cargar PNFs</option>');
+                }
+            });
+        } else {
+            $('#pnf_id').html('<option value="">Primero seleccione una aldea</option>');
+        }
+    });
+    <?php endif; ?>
+});
+</script>
 
 <?php require_once __DIR__ . '/../../models/footer.php'; ?>

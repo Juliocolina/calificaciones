@@ -99,6 +99,11 @@ try {
             throw new Exception("PNF, Trayecto y Trimestre son obligatorios para la Asignación Académica.");
         }
         
+        if (empty($fecha_ingreso)) {
+            throw new Exception("La fecha de ingreso es obligatoria para completar la asignación académica.");
+        }
+        
+        // Verificar que el código no exista si se proporcionó
         if (!empty($codigo_estudiante)) {
             $stmt_duplicado = $conn->prepare("SELECT id FROM estudiantes WHERE codigo_estudiante = ? AND id != ?");
             $stmt_duplicado->execute([$codigo_estudiante, $id]);

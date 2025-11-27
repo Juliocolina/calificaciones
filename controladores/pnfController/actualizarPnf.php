@@ -1,6 +1,13 @@
 <?php
-require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../config/conexion.php';
+require_once __DIR__ . '/../../config/funciones.php';
+
+// Verificar sesión y rol admin
+if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'admin') {
+    header("Location: ../../index.php");
+    exit;
+}
 
 $conn = conectar();
 
@@ -15,13 +22,14 @@ $id = intval($_POST['id']);
 ## 2. Recibir y limpiar datos del formulario
 $nombre      = trim($_POST['nombre'] ?? '');
 $codigo      = trim($_POST['codigo'] ?? '');
+$aldea_id    = intval($_POST['aldea_id'] ?? 0);
 // La descripción es opcional, convertimos cadena vacía a NULL
 $descripcion = !empty($_POST['descripcion']) ? trim($_POST['descripcion']) : null;
 
 ## 3. Validar campos obligatorios
-// En este caso, solo el nombre y el código son obligatorios.
-if (empty($nombre) || empty($codigo)) {
-    redirigir('error', 'El nombre y el código son campos obligatorios.', 'pnfs/editarPnf.php?id=' . $id);
+// En este caso, el nombre, código y aldea son obligatorios.
+if (empty($nombre) || empty($codigo) || $aldea_id <= 0) {
+    redirigir('error', 'El nombre, código y aldea son campos obligatorios.', 'pnfs/editarPnf.php?id=' . $id);
     exit;
 }
 
@@ -39,11 +47,12 @@ $actualizar = $conn->prepare("
     UPDATE pnfs SET 
         nombre = ?, 
         codigo = ?, 
+        aldea_id = ?,
         descripcion = ?
     WHERE id = ?
 ");
 
-$exito = $actualizar->execute([$nombre, $codigo, $descripcion, $id]);
+$exito = $actualizar->execute([$nombre, $codigo, $aldea_id, $descripcion, $id]);
 
 ## 6. Manejar el resultado de la operación
 if ($exito) {

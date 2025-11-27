@@ -29,8 +29,8 @@ require_once '../models/header.php';
                         <h5>¿Qué deseas hacer?</h5>
 
                         <?php if ($_SESSION['rol'] === 'profesor'): ?>
-                            <a href="calificaciones/cargarNotas.php" class="btn btn-primary m-2">Registrar Notas</a>
-                            <a href="inscripciones/misEstudiantesInscritos.php" class="btn btn-success m-2">Consultar Estudiantes</a>
+                            <a href="calificaciones/cargarNotasFinal.php" class="btn btn-primary m-2">Registrar Notas</a>
+
                         <?php elseif ($_SESSION['rol'] === 'coordinador'): ?>
                             <a href="reportes.php" class="btn btn-info m-2">Ver Reportes</a>
                         <?php elseif ($_SESSION['rol'] === 'admin'): ?>

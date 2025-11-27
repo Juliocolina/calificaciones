@@ -31,7 +31,6 @@ if ($rol_usuario === 'coordinador') {
     $fecha_fin_gestion    = trim($_POST['fecha_fin_gestion'] ?? '');
     $descripcion          = trim($_POST['descripcion'] ?? '');
 } elseif ($rol_usuario === 'profesor') {
-    $aldea_id     = intval($_POST['aldea_id'] ?? 0);
     $especialidad = trim($_POST['especialidad'] ?? '');
     $titulo       = trim($_POST['titulo'] ?? '');
 } elseif ($rol_usuario === 'estudiante') {
@@ -81,8 +80,8 @@ if ($rol_usuario === 'estudiante') {
     }
 } elseif ($rol_usuario === 'profesor') {
     // Campos obligatorios para profesores
-    if (empty($nombre) || empty($apellido) || empty($aldea_id) || empty($especialidad) || empty($titulo)) {
-        redirigir('error', 'Todos los campos son obligatorios para profesores.', 'usuarios/miPerfil.php');
+    if (empty($nombre) || empty($apellido) || empty($especialidad) || empty($titulo)) {
+        redirigir('error', 'Nombre, apellido, especialidad y título son obligatorios para profesores.', 'usuarios/miPerfil.php');
         exit;
     }
 } elseif ($rol_usuario === 'coordinador') {
@@ -128,11 +127,12 @@ try {
         $stmt_check = $conn->prepare("SELECT id FROM profesores WHERE usuario_id = ?");
         $stmt_check->execute([$usuario_id]);
         if ($stmt_check->fetch()) {
-            $sql_rol = "UPDATE profesores SET aldea_id = ?, especialidad = ?, titulo = ? WHERE usuario_id = ?";
-            $params_rol = [$aldea_id, $especialidad, $titulo, $usuario_id];
+            $sql_rol = "UPDATE profesores SET especialidad = ?, titulo = ? WHERE usuario_id = ?";
+            $params_rol = [$especialidad, $titulo, $usuario_id];
         } else {
-            $sql_rol = "INSERT INTO profesores (aldea_id, especialidad, titulo, usuario_id) VALUES (?, ?, ?, ?)";
-            $params_rol = [$aldea_id, $especialidad, $titulo, $usuario_id];
+            // Crear perfil de profesor sin aldea (admin la asignará después)
+            $sql_rol = "INSERT INTO profesores (especialidad, titulo, usuario_id) VALUES (?, ?, ?)";
+            $params_rol = [$especialidad, $titulo, $usuario_id];
         }
         $stmt_rol = $conn->prepare($sql_rol);
         $stmt_rol->execute($params_rol);

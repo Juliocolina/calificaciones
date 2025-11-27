@@ -237,7 +237,7 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
                     
                     <!-- Fila 1: PNF y Trayecto -->
                     <div class="col-md-6">
-                        <label for="pnf_id" class="form-label">PNF</label>
+                        <label for="pnf_id" class="form-label">PNF <span class="text-danger">*</span></label>
                         <select class="form-select" id="pnf_id" name="pnf_id" 
                                 data-validar='{"tipo":"","opciones":{"requerido":true}}'
                                 data-nombre="PNF"
@@ -251,7 +251,7 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="trayecto_id" class="form-label">Trayecto</label>
+                        <label for="trayecto_id" class="form-label">Trayecto <span class="text-danger">*</span></label>
                         <select class="form-select" id="trayecto_id" name="trayecto_id" 
                                 data-validar='{"tipo":"","opciones":{"requerido":true}}'
                                 data-nombre="Trayecto"
@@ -267,7 +267,7 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
                     
                     <!-- Fila 2: Trimestre y Código de Estudiante -->
                     <div class="col-md-6">
-                        <label for="trimestre_id" class="form-label">Trimestre</label>
+                        <label for="trimestre_id" class="form-label">Trimestre <span class="text-danger">*</span></label>
                         <select class="form-select" id="trimestre_id" name="trimestre_id" 
                                 data-validar='{"tipo":"","opciones":{"requerido":true}}'
                                 data-nombre="Trimestre"
@@ -282,7 +282,15 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
                     </div>
                     <div class="col-md-6">
                         <label for="codigo_estudiante" class="form-label">Código de Estudiante</label>
-                        <input type="text" class="form-control" id="codigo_estudiante" name="codigo_estudiante" value="<?= htmlspecialchars($estudiante['codigo_estudiante']) ?>">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="codigo_estudiante" name="codigo_estudiante" 
+                                   value="<?= htmlspecialchars($estudiante['codigo_estudiante']) ?>" 
+                                   placeholder="Haz clic en generar" readonly>
+                            <button type="button" class="btn btn-outline-primary" id="generarCodigo">
+                                <i class="fa fa-refresh"></i> Generar
+                            </button>
+                        </div>
+                        <small class="text-muted">Formato: 0001, 0002, etc.</small>
                     </div>
                     
                     <!-- Fila 3: Estado Académico y Fecha de Ingreso -->
@@ -296,11 +304,13 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
                         </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="fecha_ingreso" class="form-label">Fecha de Ingreso</label>
+                        <label for="fecha_ingreso" class="form-label">Fecha de Ingreso <span class="text-danger">*</span></label>
                         <input type="date" class="form-control" id="fecha_ingreso" name="fecha_ingreso" 
-                               data-validar='{"tipo":"fecha","opciones":{}}'
+                               data-validar='{"tipo":"fecha","opciones":{"requerido":true}}'
                                data-nombre="Fecha de Ingreso"
-                               value="<?= htmlspecialchars($estudiante['fecha_ingreso']) ?>">
+                               value="<?= htmlspecialchars($estudiante['fecha_ingreso']) ?>" 
+                               required>
+                        <small class="text-muted">Campo obligatorio para completar la asignación académica</small>
                     </div>
                     
                     <!-- Fila 4: Fecha de Graduación -->
@@ -505,6 +515,32 @@ $action_url = "../../controladores/estudianteController/actualizarEstudiante.php
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.getElementById('generarCodigo').addEventListener('click', function() {
+    const btn = this;
+    const input = document.getElementById('codigo_estudiante');
+    
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Generando...';
+    
+    fetch('../../controladores/estudianteController/generarCodigo.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                input.value = data.codigo;
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error al generar código');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa fa-refresh"></i> Generar';
+        });
+});
+</script>
 </body>
 </html>
 <?php require_once __DIR__ . '/../../models/footer.php'; ?>

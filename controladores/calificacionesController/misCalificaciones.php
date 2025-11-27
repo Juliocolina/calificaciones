@@ -30,15 +30,14 @@ try {
         FROM calificaciones c
         JOIN inscripciones i ON c.inscripcion_id = i.id
         JOIN estudiantes e ON i.estudiante_id = e.id
-        JOIN oferta_materias om ON i.oferta_materia_id = om.id
-        JOIN materias m ON om.materia_id = m.id
-        JOIN oferta_academica oa ON om.oferta_academica_id = oa.id
+        JOIN secciones s ON i.seccion_id = s.id
+        JOIN materias m ON s.materia_id = m.id
+        JOIN profesores prof ON s.profesor_id = prof.id
+        JOIN usuarios prof_u ON prof.usuario_id = prof_u.id
+        JOIN oferta_academica oa ON s.oferta_academica_id = oa.id
         JOIN pnfs p ON oa.pnf_id = p.id
         JOIN trayectos t ON oa.trayecto_id = t.id
         JOIN trimestres tr ON oa.trimestre_id = tr.id
-        LEFT JOIN oferta_materia_profesor omp ON om.id = omp.oferta_materia_id
-        LEFT JOIN profesores prof ON omp.profesor_id = prof.id
-        LEFT JOIN usuarios prof_u ON prof.usuario_id = prof_u.id
         WHERE e.usuario_id = ?
         ORDER BY c.fecha_registro DESC
     ");

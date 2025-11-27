@@ -18,7 +18,11 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
                     </p>
 
                     <div class="mb-3 text-right">
-                        <a href="crearOferta.php" class="btn btn-primary"><i class="fa fa-plus"></i> Nueva Oferta</a>
+                        <?php if ($_SESSION['rol'] === 'coordinador'): ?>
+                            <a href="crearOferta.php" class="btn btn-primary"><i class="fa fa-plus"></i> Nueva Oferta</a>
+                        <?php else: ?>
+                            <a href="../aldeas/verAldeas.php" class="btn btn-primary"><i class="fa fa-plus"></i> Nueva Oferta</a>
+                        <?php endif; ?>
                     </div>
 
                     <?php if (!empty($error_message)): ?>
@@ -33,6 +37,7 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
                                         <th>PNF</th>
                                         <th>Trayecto</th>
                                         <th>Trimestre</th>
+                                        <th>Tipo de Oferta</th>
                                         <th>Fecha de Inicio</th>
                                         <th class="text-center">Estatus</th>
                                         <th class="text-center">Acciones</th>
@@ -44,6 +49,7 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
         <td><?= htmlspecialchars($oferta['nombre_pnf']) ?></td>
         <td><?= htmlspecialchars($oferta['nombre_trayecto']) ?></td>
         <td><?= htmlspecialchars($oferta['nombre_trimestre']) ?></td>
+        <td><?= htmlspecialchars($oferta['tipo_oferta'] ?? 'Regular') ?></td>
         <td>
             <?= htmlspecialchars(date("d/m/Y", strtotime($oferta['fecha_inicio_real']))) ?>
             <?php if ($oferta['fecha_inicio_excepcion']): ?>
@@ -61,41 +67,21 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
         </td>
         <td class="acciones text-center">
             <?php if ($oferta['estatus'] == 'Planificado'): ?>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-cogs"></i> Gestionar
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="../ofertas_materias/verOfertasMaterias.php?id=<?= $oferta['id'] ?>">
-                            Gestionar Materias
-                        </a>
-                        <form action="editarOferta.php" method="POST" style="display: inline;">
-                            <input type="hidden" name="id" value="<?= htmlspecialchars($oferta['id']) ?>">
-                            <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left;">
-                                Editar Oferta
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <a href="editarOferta.php?id=<?= htmlspecialchars($oferta['id']) ?>" class="btn btn-sm btn-outline-primary">
+                    <i class="fa fa-edit"></i> Editar
+                </a>
                 
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-outline-success dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-play"></i> Acciones
+                <form action="../../controladores/ofertaController/actualizarEstatusOferta.php" method="POST" style="display: inline;">
+                    <input type="hidden" name="id" value="<?= $oferta['id'] ?>">
+                    <input type="hidden" name="nuevo_estatus" value="Abierto">
+                    <button type="submit" class="btn btn-sm btn-outline-success">
+                        <i class="fa fa-play"></i> Abrir
                     </button>
-                    <div class="dropdown-menu">
-                        <form action="../../controladores/ofertaController/actualizarEstatusOferta.php" method="POST" style="display: inline;">
-                            <input type="hidden" name="id" value="<?= $oferta['id'] ?>">
-                            <input type="hidden" name="nuevo_estatus" value="Abierto">
-                            <button type="submit" class="dropdown-item" style="border: none; background: none; width: 100%; text-align: left;">
-                                Abrir Oferta
-                            </button>
-                        </form>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-warning" href="#" data-toggle="modal" data-target="#modalDesactivar<?= $oferta['id'] ?>">
-                            Desactivar
-                        </a>
-                    </div>
-                </div>
+                </form>
+                
+                <button type="button" class="btn btn-sm btn-outline-warning" data-toggle="modal" data-target="#modalDesactivar<?= $oferta['id'] ?>">
+                    <i class="fa fa-ban"></i> Desactivar
+                </button>
 
             <?php elseif ($oferta['estatus'] == 'Inactivo'): ?>
                 <form action="../../controladores/ofertaController/actualizarEstatusOferta.php" method="POST" style="display: inline-block;">
@@ -104,26 +90,9 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
                     <button type="submit" class="btn btn-sm btn-outline-success" title="Reactivar Oferta"><i class="fa fa-toggle-on"></i></button>
                 </form>
             <?php elseif ($oferta['estatus'] == 'Abierto'): ?>
-                <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
-                        <i class="fa fa-tasks"></i> Gestionar
-                    </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#" data-toggle="modal" data-target="#modalVerOferta<?= $oferta['id'] ?>">
-                            Ver Detalles
-                        </a>
-                        <a class="dropdown-item" href="../inscripciones/inscribirEstudiantes.php?oferta_id=<?= $oferta['id'] ?>">
-                            Inscribir Estudiantes
-                        </a>
-                        <a class="dropdown-item" href="../calificaciones/registrarCalificaciones.php?oferta_id=<?= $oferta['id'] ?>">
-                            Registrar Calificaciones
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item text-danger" href="#" data-toggle="modal" data-target="#modalCerrar<?= $oferta['id'] ?>">
-                            <i class="fa fa-lock"></i> Cerrar Oferta
-                        </a>
-                    </div>
-                </div>
+                <button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#modalVerOferta<?= $oferta['id'] ?>">
+                    <i class="fa fa-eye"></i> Ver
+                </button>
     
             <?php elseif ($oferta['estatus'] == 'Cerrado'): ?>
                 <button type="button" class="btn btn-sm btn-outline-info" data-toggle="modal" data-target="#modalVerOferta<?= $oferta['id'] ?>">
@@ -180,39 +149,7 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
         </div>
     </div>
     
-    <div class="modal fade" id="modalCerrar<?= $oferta['id'] ?>" tabindex="-1" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
-                    <h5 class="modal-title">Confirmar Cierre de Oferta</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div class="alert alert-warning">
-                        <i class="fa fa-exclamation-triangle"></i> <strong>¡ATENCIÓN!</strong>
-                    </div>
-                    <p>¿Estás seguro de que deseas <strong>CERRAR</strong> esta oferta?</p>
-                    <p class="font-weight-bold text-danger"><?= htmlspecialchars($oferta['nombre_pnf'] . ' - ' . $oferta['nombre_trayecto'] . ' - ' . $oferta['nombre_trimestre']) ?></p>
-                    <div class="alert alert-info">
-                        <strong>Al cerrar la oferta:</strong>
-                        <ul class="mb-0">
-                            <li>Los profesores NO podrán modificar más notas</li>
-                            <li>Solo los administradores podrán hacer cambios</li>
-                            <li>Esta acción protege la integridad académica</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <form action="../../controladores/ofertaController/actualizarEstatusOferta.php" method="POST" style="display:inline;">
-                        <input type="hidden" name="id" value="<?= $oferta['id'] ?>">
-                        <input type="hidden" name="nuevo_estatus" value="Cerrado">
-                        <button type="submit" class="btn btn-danger">Sí, Cerrar Oferta</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <?php endforeach; ?>
 </tbody>
                             </table>

@@ -110,7 +110,7 @@ $pnfs = $stmt_pnf->fetchAll(PDO::FETCH_ASSOC);
                                                 required>
                                             <option value="">Seleccione la duración</option>
                                             <?php 
-                                            $duraciones = ['anual', 'semestral', 'trimestral', 'intensivo'];
+                                            $duraciones = ['trimestral', 'bimestral', 'anual'];
                                             foreach ($duraciones as $d): ?>
                                                 <option value="<?= $d ?>" 
                                                     <?= $d == $materia['duracion'] ? 'selected' : '' ?>>
@@ -155,7 +155,7 @@ $pnfs = $stmt_pnf->fetchAll(PDO::FETCH_ASSOC);
                             </tbody>
                         </table>
                         <div class="text-right">
-                            <a href="verMaterias.php" class="btn btn-secondary">Cancelar</a>
+                            <a href="materiasPorPnf.php" class="btn btn-secondary">Cancelar</a>
                             <button type="submit" class="btn btn-success">Guardar Cambios</button>
                         </div>
                     </form>

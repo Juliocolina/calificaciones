@@ -7,43 +7,21 @@ require_once __DIR__ . '/../../controladores/estudianteController/verEstudiantes
 ?>
 
 
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Listado de Profesores</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body {
-            background: #f4f6f9;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
-        .acciones a, .acciones button {
-            margin-right: 6px;
-        }
-        .card {
-            margin-top: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(30,60,114,0.12);
-        }
-        .card-header {
-            background: linear-gradient(90deg,#1e3c72,#2a5298);
-            color: #fff;
-            border-radius: 16px 16px 0 0;
-        }
-        .btn-primary {
-            background: #2a5298;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #1e3c72;
-        }
-    </style>
-</head>
-<body>
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .acciones a, .acciones button {
+        margin-right: 6px;
+    }
+    .table-responsive {
+        overflow: visible !important;
+    }
+    .dropdown-menu {
+        z-index: 1050;
+        min-width: 180px;
+    }
+</style>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-11">
@@ -78,7 +56,11 @@ require_once __DIR__ . '/../../controladores/estudianteController/verEstudiantes
                         <select id="filtroAldea" class="form-control">
                             <option value="">Todas las Aldeas</option>
                             <?php 
-                            $stmt_aldeas = $conn->query("SELECT DISTINCT a.nombre FROM aldeas a INNER JOIN estudiantes e ON a.id = e.aldea_id ORDER BY a.nombre");
+                            if ($_SESSION['rol'] === 'admin') {
+                                $stmt_aldeas = $conn->query("SELECT nombre FROM aldeas ORDER BY nombre");
+                            } else {
+                                $stmt_aldeas = $conn->query("SELECT DISTINCT a.nombre FROM aldeas a INNER JOIN estudiantes e ON a.id = e.aldea_id ORDER BY a.nombre");
+                            }
                             while ($aldea = $stmt_aldeas->fetch(PDO::FETCH_ASSOC)) {
                                 echo '<option value="' . htmlspecialchars($aldea['nombre']) . '">' . htmlspecialchars($aldea['nombre']) . '</option>';
                             }
@@ -120,33 +102,34 @@ require_once __DIR__ . '/../../controladores/estudianteController/verEstudiantes
                                         <td class="text-center"><span class="badge badge-success"><i class="fa fa-check"></i> Completo</span></td>
                                         <td class="text-center"><span class="badge badge-success"><i class="fa fa-check"></i> Completo</span></td>
                                         <td class="acciones text-center">
-                                           
-                                       <button type="button"
-                                        class="btn btn-sm btn-outline-info"
-                                        title="Ver"
-                                        data-toggle="modal"
-                                        data-target="#modalEstudiante<?= $estudiante['estudiante_id'] ?>">
-                                       <i class="fa fa-eye"></i>
-                                       </button>
+                                            <div class="btn-group dropleft" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
+                                                    Acciones
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <button class="dropdown-item" data-toggle="modal" data-target="#modalEstudiante<?= $estudiante['estudiante_id'] ?>">
+                                                        Ver Detalles
+                                                    </button>
+                                                    <a class="dropdown-item" href="../inscripciones/inscribirEnSecciones.php?cedula=<?= htmlspecialchars($estudiante['usuario_cedula']) ?>">
+                                                        Inscribir en Secciones
+                                                    </a>
 
-                                        <form action="editarEstudiante.php" method="POST" style="display: inline-block; margin: 0; padding: 0;">
-                                            <input type="hidden" name="id" value="<?= htmlspecialchars($estudiante['estudiante_id']) ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-primary mx-1" title="Editar Estudiante">
-                                            <i class="fa fa-edit"></i>
-                                        </button>
-                                        </form>
-
-                                       <form action="../../controladores/estudianteController/eliminarEstudiante.php" method="POST" style="display:inline;">
-                                           <input type="hidden" name="id" value="<?= $estudiante['estudiante_id'] ?>">
-                                           <button type="button" 
-                                                   class="btn btn-sm btn-outline-danger mx-1" 
-                                                   data-eliminar
-                                                   data-mensaje="¿Estás seguro de eliminar al estudiante <?= htmlspecialchars($estudiante['usuario_nombre']) ?> <?= htmlspecialchars($estudiante['usuario_apellido']) ?>? Esta acción no se puede deshacer."
-                                                   data-titulo="Eliminar Estudiante"
-                                                   title="Eliminar">
-                                                <i class="fa fa-trash"></i>
-                                           </button>
-                                       </form>
+                                                    <div class="dropdown-divider"></div>
+                                                    <form action="editarEstudiante.php" method="POST" style="display: inline-block; width: 100%;">
+                                                        <input type="hidden" name="id" value="<?= htmlspecialchars($estudiante['estudiante_id']) ?>">
+                                                        <button type="submit" class="dropdown-item">
+                                                            Editar Estudiante
+                                                        </button>
+                                                    </form>
+                                                    <form action="../../controladores/estudianteController/eliminarEstudiante.php" method="POST" style="display: inline-block; width: 100%;">
+                                                        <input type="hidden" name="id" value="<?= $estudiante['estudiante_id'] ?>">
+                                                        <button type="submit" class="dropdown-item text-danger" 
+                                                                onclick="return confirm('¿Estás seguro de eliminar al estudiante <?= htmlspecialchars($estudiante['usuario_nombre']) ?> <?= htmlspecialchars($estudiante['usuario_apellido']) ?>? Esta acción no se puede deshacer.')">
+                                                            Eliminar
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
 
                                             <!-- Modal Ver Detalles -->
 <div class="modal fade" id="modalEstudiante<?= $estudiante['estudiante_id'] ?>" tabindex="-1" role="dialog" aria-labelledby="modalEstudianteLabel<?= $estudiante['estudiante_id'] ?>" aria-hidden="true">
@@ -301,128 +284,143 @@ require_once __DIR__ . '/../../controladores/estudianteController/verEstudiantes
 </div>
 
 
-</body>
-</html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-// Búsqueda simple sin DataTables
-function filtrarTabla() {
+// Variables globales
+let paginaActual = 1;
+const filasPorPagina = 10;
+let todasLasFilas = [];
+
+// Función para aplicar todos los filtros
+function aplicarFiltros() {
     const busqueda = document.getElementById('busquedaGeneral').value.toLowerCase();
     const filtroPnf = document.getElementById('filtroPnf').value.toLowerCase();
     const filtroAldea = document.getElementById('filtroAldea').value.toLowerCase();
     
-    const filas = document.querySelectorAll('#tablaCompletos tbody tr');
-    
-    filas.forEach(fila => {
+    todasLasFilas.forEach(fila => {
         const texto = fila.textContent.toLowerCase();
-        const pnf = fila.cells[3].textContent.toLowerCase();
-        const aldea = fila.cells[4].textContent.toLowerCase();
+        const pnf = fila.cells[3] ? fila.cells[3].textContent.toLowerCase() : '';
+        const aldea = fila.cells[4] ? fila.cells[4].textContent.toLowerCase() : '';
         
-        const coincideBusqueda = texto.includes(busqueda);
+        const coincideBusqueda = !busqueda || texto.includes(busqueda);
         const coincidePnf = !filtroPnf || pnf.includes(filtroPnf);
         const coincideAldea = !filtroAldea || aldea.includes(filtroAldea);
         
         if (coincideBusqueda && coincidePnf && coincideAldea) {
-            fila.style.display = '';
+            fila.classList.remove('filtrado');
         } else {
-            fila.style.display = 'none';
+            fila.classList.add('filtrado');
         }
     });
     
-    // Reiniciar paginación después de filtrar
+    // Reiniciar a página 1 después de filtrar
     paginaActual = 1;
-    if (typeof paginarTabla === 'function') {
-        paginarTabla();
+    paginarTabla();
+}
+
+// Función de paginación
+function paginarTabla() {
+    const filasVisibles = todasLasFilas.filter(fila => !fila.classList.contains('filtrado'));
+    const totalFilas = filasVisibles.length;
+    const totalPaginas = Math.ceil(totalFilas / filasPorPagina) || 1;
+    
+    // Asegurar que la página actual esté en rango válido
+    if (paginaActual > totalPaginas) {
+        paginaActual = totalPaginas;
+    }
+    if (paginaActual < 1) {
+        paginaActual = 1;
+    }
+    
+    const inicio = (paginaActual - 1) * filasPorPagina;
+    const fin = inicio + filasPorPagina;
+    
+    // Ocultar todas las filas primero
+    todasLasFilas.forEach(fila => {
+        fila.style.display = 'none';
+    });
+    
+    // Mostrar solo las filas de la página actual
+    filasVisibles.slice(inicio, fin).forEach(fila => {
+        fila.style.display = '';
+    });
+    
+    // Actualizar información
+    const infoElement = document.getElementById('infoCompletos');
+    const paginaElement = document.getElementById('paginaCompletos');
+    const anteriorBtn = document.getElementById('anteriorCompletos');
+    const siguienteBtn = document.getElementById('siguienteCompletos');
+    
+    if (infoElement) {
+        const mostrandoInicio = totalFilas > 0 ? inicio + 1 : 0;
+        const mostrandoFin = Math.min(fin, totalFilas);
+        infoElement.textContent = `Mostrando ${mostrandoInicio}-${mostrandoFin} de ${totalFilas} estudiantes`;
+    }
+    
+    if (paginaElement) {
+        paginaElement.textContent = `Página ${paginaActual} de ${totalPaginas}`;
+    }
+    
+    // Actualizar botones
+    if (anteriorBtn) {
+        anteriorBtn.disabled = paginaActual <= 1;
+    }
+    if (siguienteBtn) {
+        siguienteBtn.disabled = paginaActual >= totalPaginas;
     }
 }
 
 // Event listeners
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('busquedaGeneral').addEventListener('input', filtrarTabla);
-    
-    // Filtros con jQuery para los selects
-    $('#filtroPnf').on('change', function() {
-        const valorPnf = this.value.toLowerCase();
-        const filas = document.querySelectorAll('#tablaCompletos tbody tr');
-        
-        filas.forEach(fila => {
-            const pnf = fila.cells[3].textContent.toLowerCase();
-            if (!valorPnf || pnf.includes(valorPnf)) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-        
-        // Aplicar también otros filtros activos
-        filtrarTabla();
-    });
-    
-    $('#filtroAldea').on('change', function() {
-        const valorAldea = this.value.toLowerCase();
-        const filas = document.querySelectorAll('#tablaCompletos tbody tr');
-        
-        filas.forEach(fila => {
-            const aldea = fila.cells[4].textContent.toLowerCase();
-            if (!valorAldea || aldea.includes(valorAldea)) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-        
-        // Aplicar también otros filtros activos
-        filtrarTabla();
-    });
-    
-    // Paginación simple
-    let paginaActual = 1;
-    const filasPorPagina = 10;
-    
-    function paginarTabla() {
-        const filas = document.querySelectorAll('#tablaCompletos tbody tr');
-        const filasVisibles = Array.from(filas).filter(fila => fila.style.display !== 'none');
-        const totalFilas = filasVisibles.length;
-        const totalPaginas = Math.ceil(totalFilas / filasPorPagina);
-        
-        const inicio = (paginaActual - 1) * filasPorPagina;
-        const fin = inicio + filasPorPagina;
-        
-        // Ocultar todas las filas visibles
-        filasVisibles.forEach((fila, index) => {
-            if (index >= inicio && index < fin) {
-                fila.style.display = '';
-            } else {
-                fila.style.display = 'none';
-            }
-        });
-        
-        // Actualizar info
-        document.getElementById('infoCompletos').textContent = 
-            `Mostrando ${inicio + 1}-${Math.min(fin, totalFilas)} de ${totalFilas} estudiantes`;
-        document.getElementById('paginaCompletos').textContent = `Página ${paginaActual} de ${totalPaginas}`;
-        
-        // Botones
-        document.getElementById('anteriorCompletos').disabled = paginaActual === 1;
-        document.getElementById('siguienteCompletos').disabled = paginaActual === totalPaginas || totalPaginas === 0;
+    // Obtener todas las filas al cargar
+    const tabla = document.getElementById('tablaCompletos');
+    if (tabla) {
+        todasLasFilas = Array.from(tabla.querySelectorAll('tbody tr'));
     }
     
-    // Event listeners paginación
-    document.getElementById('anteriorCompletos').addEventListener('click', function() {
-        if (paginaActual > 1) {
-            paginaActual--;
-            paginarTabla();
-        }
-    });
+    // Filtros
+    const busquedaInput = document.getElementById('busquedaGeneral');
+    const filtroPnfSelect = document.getElementById('filtroPnf');
+    const filtroAldeaSelect = document.getElementById('filtroAldea');
     
-    document.getElementById('siguienteCompletos').addEventListener('click', function() {
-        paginaActual++;
-        paginarTabla();
-    });
+    if (busquedaInput) {
+        busquedaInput.addEventListener('input', aplicarFiltros);
+    }
+    if (filtroPnfSelect) {
+        filtroPnfSelect.addEventListener('change', aplicarFiltros);
+    }
+    if (filtroAldeaSelect) {
+        filtroAldeaSelect.addEventListener('change', aplicarFiltros);
+    }
+    
+    // Botones de paginación
+    const anteriorBtn = document.getElementById('anteriorCompletos');
+    const siguienteBtn = document.getElementById('siguienteCompletos');
+    
+    if (anteriorBtn) {
+        anteriorBtn.addEventListener('click', function() {
+            if (paginaActual > 1) {
+                paginaActual--;
+                paginarTabla();
+            }
+        });
+    }
+    
+    if (siguienteBtn) {
+        siguienteBtn.addEventListener('click', function() {
+            const filasVisibles = todasLasFilas.filter(fila => !fila.classList.contains('filtrado'));
+            const totalPaginas = Math.ceil(filasVisibles.length / filasPorPagina) || 1;
+            if (paginaActual < totalPaginas) {
+                paginaActual++;
+                paginarTabla();
+            }
+        });
+    }
     
     // Inicializar paginación
-    paginarTabla();
+    if (todasLasFilas.length > 0) {
+        paginarTabla();
+    }
 });
 </script>
+
+<?php require_once __DIR__ . '/../../models/footer.php'; ?>

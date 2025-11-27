@@ -2,7 +2,8 @@
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 
-verificarSesion();
+// Proteger vista - Solo admin y coordinador
+verificarRol(['admin', 'coordinador']);
 $conn = conectar();
 
 // Obtener aldea del coordinador si es coordinador
@@ -23,7 +24,7 @@ $filtro_pnf = isset($_GET['pnf_id']) ? intval($_GET['pnf_id']) : 0;
 
 // Obtener lista de profesores (filtrados por aldea si es coordinador y por PNF si se selecciona)
 $sql = "
-    SELECT 
+    SELECT DISTINCT
         p.id, 
         u.cedula, 
         u.nombre,
@@ -35,10 +36,12 @@ $sql = "
         p.especialidad,
         p.aldea_id,
         p.pnf_id,
-        pnf.nombre AS pnf_nombre
+        pnf.nombre AS pnf_nombre,
+        a.nombre AS aldea_nombre
     FROM profesores p
     INNER JOIN usuarios u ON p.usuario_id = u.id
-    LEFT JOIN pnfs pnf ON p.pnf_id = pnf.id";
+    LEFT JOIN pnfs pnf ON p.pnf_id = pnf.id
+    LEFT JOIN aldeas a ON p.aldea_id = a.id";
 
 $params = [];
 $where_conditions = [];
@@ -57,10 +60,38 @@ if (!empty($where_conditions)) {
     $sql .= " WHERE " . implode(" AND ", $where_conditions);
 }
 
-$sql .= " ORDER BY u.apellido, u.nombre";
+$sql .= " ORDER BY p.id, u.apellido, u.nombre";
 
 $consulta = $conn->prepare($sql);
 $consulta->execute($params);
 
 $profesores = $consulta->fetchAll(PDO::FETCH_ASSOC);
+
+// Obtener materias para todos los profesores en una sola consulta
+if (!empty($profesores)) {
+    $profesor_ids = array_column($profesores, 'id');
+    $placeholders = str_repeat('?,', count($profesor_ids) - 1) . '?';
+    
+    $stmt_materias = $conn->prepare("
+        SELECT mp.profesor_id, m.nombre, m.codigo, pnf.nombre as pnf_nombre
+        FROM materias m
+        JOIN materia_profesor mp ON m.id = mp.materia_id
+        JOIN pnfs pnf ON m.pnf_id = pnf.id
+        WHERE mp.profesor_id IN ($placeholders)
+        ORDER BY mp.profesor_id, pnf.nombre, m.nombre
+    ");
+    $stmt_materias->execute($profesor_ids);
+    $materias_data = $stmt_materias->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Agrupar materias por profesor
+    $materias_por_profesor = [];
+    foreach ($materias_data as $materia) {
+        $materias_por_profesor[$materia['profesor_id']][] = $materia;
+    }
+    
+    // Asignar materias a cada profesor
+    for ($i = 0; $i < count($profesores); $i++) {
+        $profesores[$i]['materias'] = $materias_por_profesor[$profesores[$i]['id']] ?? [];
+    }
+}
 ?>

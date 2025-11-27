@@ -24,9 +24,9 @@ $trimestres = [];
 $error_message = '';
 
 try {
-    // --- PASO 2 (CORREGIDO): BUSCAR TODOS LOS DATOS EDITABLES, INCLUYENDO 'tipo_oferta' ---
+    // --- PASO 2 (CORREGIDO): BUSCAR TODOS LOS DATOS EDITABLES, INCLUYENDO 'tipo_oferta' Y 'aldea_id' ---
     $stmt_oferta = $conn->prepare(
-        "SELECT pnf_id, trayecto_id, trimestre_id, tipo_oferta, estatus, fecha_inicio_excepcion, fecha_fin_excepcion 
+        "SELECT pnf_id, trayecto_id, trimestre_id, tipo_oferta, estatus, fecha_inicio_excepcion, fecha_fin_excepcion, aldea_id 
          FROM oferta_academica WHERE id = ?"
     );
     $stmt_oferta->execute([$id_oferta_a_editar]);
@@ -42,6 +42,19 @@ try {
     }
 
     // --- PASO 3: OBTENER TODAS LAS OPCIONES PARA LOS SELECTS ---
+    // Restricción por rol: coordinadores solo ven su aldea
+    if ($_SESSION['rol'] === 'coordinador') {
+        $stmt_aldea = $conn->prepare("
+            SELECT a.id, a.nombre 
+            FROM aldeas a
+            JOIN coordinadores c ON a.id = c.aldea_id
+            WHERE c.usuario_id = ?
+        ");
+        $stmt_aldea->execute([$_SESSION['usuario_id']]);
+        $aldeas = $stmt_aldea->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        $aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre ASC")->fetchAll(PDO::FETCH_ASSOC);
+    }
     $stmt_pnf = $conn->query("SELECT id, nombre FROM pnfs ORDER BY nombre ASC");
     $pnfs = $stmt_pnf->fetchAll(PDO::FETCH_ASSOC);
 
@@ -55,8 +68,6 @@ try {
 } catch (Exception $e) {
     $error_message = "Error crítico al cargar los datos: " . htmlspecialchars($e->getMessage());
 }
-
-require_once __DIR__ . '/../../models/header.php';
 ?>
 <style>
     .card { 
@@ -88,6 +99,18 @@ require_once __DIR__ . '/../../models/header.php';
                         <form action="../../controladores/ofertaController/actualizarOferta.php" method="POST">
                             
                             <input type="hidden" name="id" value="<?= htmlspecialchars($id_oferta_a_editar) ?>">
+
+                            <div class="form-group">
+                                <label for="aldea_id"><strong>Aldea (*)</strong></label>
+                                <select name="aldea_id" id="aldea_id" class="form-control" required>
+                                    <?php foreach ($aldeas as $aldea): ?>
+                                        <option value="<?= htmlspecialchars($aldea['id']) ?>" 
+                                            <?php if ($aldea['id'] == $oferta_actual['aldea_id']) echo 'selected'; ?>>
+                                            <?= htmlspecialchars($aldea['nombre']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
 
                             <div class="form-group">
                                 <label for="pnf_id"><strong>Programa Nacional de Formación (PNF) (*)</strong></label>

@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
-require_once __DIR__ . '/../../controladores/hellpers/auth.php'; // Corregido 'hellpers'
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+
+// Verificar sesión
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: ../../index.php");
+    exit;
+}
 
 $conn = conectar();
 $redirect_view = 'ofertas_academicas/verOfertas.php';
@@ -21,6 +27,7 @@ $pnf_id       = isset($_POST['pnf_id']) ? intval($_POST['pnf_id']) : 0;
 $trayecto_id  = isset($_POST['trayecto_id']) ? intval($_POST['trayecto_id']) : 0;
 $trimestre_id = isset($_POST['trimestre_id']) ? intval($_POST['trimestre_id']) : 0;
 $tipo_oferta  = trim($_POST['tipo_oferta'] ?? ''); // <--- ¡CRÍTICO: CAMPO AÑADIDO!
+$aldea_id     = isset($_POST['aldea_id']) ? intval($_POST['aldea_id']) : 0;
 
 $fecha_inicio_excepcion = !empty($_POST['fecha_inicio_excepcion']) ? trim($_POST['fecha_inicio_excepcion']) : null;
 $fecha_fin_excepcion    = !empty($_POST['fecha_fin_excepcion']) ? trim($_POST['fecha_fin_excepcion']) : null;
@@ -28,8 +35,8 @@ $fecha_fin_excepcion    = !empty($_POST['fecha_fin_excepcion']) ? trim($_POST['f
 $redirect_edit = 'ofertas_academicas/editarOferta.php?id=' . $id;
 
 // 2. Validaciones de campos obligatorios
-if ($id <= 0 || $pnf_id <= 0 || $trayecto_id <= 0 || $trimestre_id <= 0 || empty($tipo_oferta)) {
-    redirigir('error', 'Faltan campos obligatorios (ID, PNF, Trayecto, Trimestre o Tipo de Oferta).', $redirect_edit);
+if ($id <= 0 || $pnf_id <= 0 || $trayecto_id <= 0 || $trimestre_id <= 0 || empty($tipo_oferta) || $aldea_id <= 0) {
+    redirigir('error', 'Faltan campos obligatorios (ID, Aldea, PNF, Trayecto, Trimestre o Tipo de Oferta).', $redirect_edit);
     exit;
 }
 
@@ -68,16 +75,17 @@ try {
     }
     
     // 5. Verificar unicidad (que no choque con otra oferta existente)
-    // CRÍTICO: Se añadió 'tipo_oferta' a la verificación UNIQUE.
+    // CRÍTICO: Se añadió 'tipo_oferta' y 'aldea_id' a la verificación UNIQUE.
     $stmt_unique = $conn->prepare("
         SELECT id FROM oferta_academica 
         WHERE pnf_id = ? 
           AND trayecto_id = ? 
           AND trimestre_id = ? 
           AND tipo_oferta = ?
+          AND aldea_id = ?
           AND id != ?
     ");
-    $stmt_unique->execute([$pnf_id, $trayecto_id, $trimestre_id, $tipo_oferta, $id]);
+    $stmt_unique->execute([$pnf_id, $trayecto_id, $trimestre_id, $tipo_oferta, $aldea_id, $id]);
     
     if ($stmt_unique->fetch()) {
         redirigir('error', 'Ya existe otra oferta académica con esa misma combinación (PNF, Trayecto, Trimestre y Tipo).', $redirect_edit);
@@ -95,6 +103,7 @@ $sql = "UPDATE oferta_academica SET
             trayecto_id = ?, 
             trimestre_id = ?,
             tipo_oferta = ?, /* <--- ¡CRÍTICO: CAMPO AÑADIDO AL UPDATE! */
+            aldea_id = ?,
             fecha_inicio_excepcion = ?,
             fecha_fin_excepcion = ?
         WHERE id = ?";
@@ -105,6 +114,7 @@ $exito = $stmt_update->execute([
     $trayecto_id,
     $trimestre_id,
     $tipo_oferta,
+    $aldea_id,
     $fecha_inicio_excepcion,
     $fecha_fin_excepcion,
     $id

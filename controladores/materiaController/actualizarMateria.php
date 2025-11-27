@@ -5,13 +5,13 @@ require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 $conn = conectar();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirigir('error', 'Método de solicitud inválido.', 'materias/verMaterias.php');
+    redirigir('error', 'Método de solicitud inválido.', 'materias/materiasPorPnf.php');
     exit;
 }
 
 // 1. Validar ID y obtener ID (CRÍTICO)
 if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-    redirigir('error', 'ID de materia inválido o faltante.', 'materias/verMaterias.php');
+    redirigir('error', 'ID de materia inválido o faltante.', 'materias/materiasPorPnf.php');
     exit;
 }
 
@@ -35,13 +35,13 @@ if ($pnf_id <= 0 || empty($nombre) || $creditos <= 0 || empty($duracion)) {
 }
 
 // Validación del ENUM 'duracion'
-$duraciones_validas = ['anual', 'semestral', 'trimestral', 'intensivo'];
+$duraciones_validas = ['trimestral', 'bimestral', 'anual'];
 if (!in_array($duracion, $duraciones_validas)) {
     redirigir('error', 'El valor de Duración no es válido.', $redirect_url_error);
     exit;
 }
 
-// 4. Validar Duplicados por Nombre (CRÍTICO: Nombre es UNIQUE)
+// 4. Validar Duplicados por Nombre y Código
 // Debe verificar que el nuevo nombre no esté siendo usado por *otra* materia.
 try {
     $stmt = $conn->prepare("SELECT COUNT(*) FROM materias WHERE nombre = ? AND id != ?");
@@ -50,6 +50,17 @@ try {
     if ($stmt->fetchColumn() > 0) {
         redirigir('error', 'El nombre "' . htmlspecialchars($nombre) . '" ya está registrado en otra materia.', $redirect_url_error);
         exit;
+    }
+    
+    // Validar código duplicado si no está vacío
+    if (!empty($codigo)) {
+        $stmt_codigo = $conn->prepare("SELECT COUNT(*) FROM materias WHERE codigo = ? AND id != ?");
+        $stmt_codigo->execute([$codigo, $id]);
+        
+        if ($stmt_codigo->fetchColumn() > 0) {
+            redirigir('error', 'El código "' . htmlspecialchars($codigo) . '" ya está registrado en otra materia.', $redirect_url_error);
+            exit;
+        }
     }
 } catch (PDOException $e) {
     redirigir('error', 'Error al validar duplicados: ' . $e->getMessage(), $redirect_url_error);
@@ -85,7 +96,7 @@ try {
 
     // 7. Manejar el resultado de la operación
     if ($exito) {
-        redirigir('exito', 'Materia actualizada correctamente.', 'materias/verMaterias.php');
+        redirigir('exito', 'Materia actualizada correctamente.', 'materias/materiasPorPnf.php');
     } else {
         redirigir('error', 'Error al actualizar la materia. Ningún cambio realizado.', $redirect_url_error);
     }

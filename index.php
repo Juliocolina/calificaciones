@@ -36,21 +36,31 @@ session_start();
                 </div>
                 <div class="login-form">
                     <?php
+                        // Priorizar mensajes de sesión sobre parámetros GET
                         if (isset($_SESSION['mensaje'])) {
-                            // Mensaje de error
+                            $mensaje = $_SESSION['mensaje'];
+                            $icon = 'error';
+                            $title = 'Error';
+                            
+                            // Detectar tipo de mensaje
+                            if (strpos($mensaje, 'bloqueada') !== false) {
+                                $icon = 'warning';
+                                $title = 'Cuenta Bloqueada';
+                            } elseif (strpos($mensaje, 'quedan') !== false) {
+                                $icon = 'warning';
+                                $title = 'Intento Fallido';
+                            }
+                            
                             echo "<script>
                                 Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: '" . addslashes($_SESSION['mensaje']) . "',
+                                    icon: '$icon',
+                                    title: '$title',
+                                    text: '" . addslashes($mensaje) . "',
                                     confirmButtonColor: '#3085d6'
                                 });
                             </script>";
                             unset($_SESSION['mensaje']);
-                        }
-
-                        if (isset($_GET['exito']) && $_GET['exito'] === 'logout') {
-                            // Mensaje de éxito al cerrar sesión
+                        } elseif (isset($_GET['exito']) && $_GET['exito'] === 'logout') {
                             echo "<script>
                                 Swal.fire({
                                     icon: 'success',
@@ -59,14 +69,10 @@ session_start();
                                     confirmButtonColor: '#3085d6'
                                 });
                             </script>";
-                        }
-                        
-                        if (isset($_GET['error'])) {
+                        } elseif (isset($_GET['error'])) {
                             $mensaje_error = urldecode($_GET['error']);
                             
-                            // Verificar si es error de sesión múltiple
                             if (strpos($mensaje_error, 'Ya tienes una sesión activa') !== false) {
-                                // Error de sesión múltiple
                                 echo "<script>
                                     Swal.fire({
                                         icon: 'warning',
@@ -77,7 +83,6 @@ session_start();
                                     });
                                 </script>";
                             } else {
-                                // Otros errores (credenciales, etc.)
                                 echo "<script>
                                     Swal.fire({
                                         icon: 'error',

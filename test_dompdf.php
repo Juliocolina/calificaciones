@@ -28,7 +28,7 @@ $html = '
 </head>
 <body>
     <div class="header">
-        <h1>🎉 DomPDF Funcionando Correctamente</h1>
+        <h1> DomPDF Funcionando Correctamente</h1>
         <p>Sistema Misión Sucre - Prueba de PDF</p>
     </div>
     
@@ -37,7 +37,7 @@ $html = '
         <p><strong>Fecha:</strong> ' . date('d/m/Y H:i:s') . '</p>
         <p><strong>Versión PHP:</strong> ' . PHP_VERSION . '</p>
         <p><strong>DomPDF:</strong> Instalado y funcionando</p>
-        <p class="success">✅ El sistema está listo para generar reportes PDF</p>
+        <p class="success">El sistema está listo para generar reportes PDF</p>
     </div>
     
     <hr>

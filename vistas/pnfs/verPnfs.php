@@ -1,6 +1,10 @@
 <?php
-require_once __DIR__ . '/../../controladores/hellpers/auth.php';
-verificarRol(['admin', 'coordinador']);
+session_start();
+// Verificar sesión y rol
+if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['rol'], ['admin', 'coordinador'])) {
+    header("Location: ../../index.php");
+    exit;
+}
 require_once __DIR__ . '/../../models/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
@@ -49,6 +53,12 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
             <div class="card shadow">
                 <div class="card-header text-center">
                     <h3 class="mb-0"><i class="fa fa-graduation-cap"></i> PNF Registrados</h3>
+                    <?php if (isset($_GET['aldea_id']) && $_GET['aldea_id'] > 0): ?>
+                        <?php 
+                        $aldea_nombre = !empty($pnfs) ? $pnfs[0]['aldea_nombre'] : 'Aldea seleccionada';
+                        ?>
+                        <p class="mb-0"><small>Filtrado por: <?= htmlspecialchars($aldea_nombre) ?></small></p>
+                    <?php endif; ?>
                 </div>
 
                 <div class="card-body">
@@ -57,8 +67,18 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
                         Lista de Programas Nacionales de Formación (PNF) en el sistema.
                 </p>
 
-                <div class="mb-3 text-right">
-                    <a href="crearPnf.php" class="btn btn-primary"><i class="fa fa-plus"></i> Nuevo PNF</a>
+                <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                        <?php if (isset($_GET['aldea_id'])): ?>
+                            <a href="verPnfs.php" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Ver Todos los PNFs
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                    <div>
+                        <a href="../materias/materiasPorPnf.php" class="btn btn-info mr-2"><i class="fa fa-book"></i> Ver Materias</a>
+                        <a href="crearPnf.php" class="btn btn-primary"><i class="fa fa-plus"></i> Nuevo PNF</a>
+                    </div>
                 </div>
                     <?php if (isset($pnfs) && count($pnfs) > 0): ?>
                 <div class="table-responsive">
@@ -68,6 +88,7 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
                                     <tr>
                                         <th>Código</th>
                                         <th>Nombre</th>
+                                        <th>Aldea</th>
                                         <th class="text-center">Acciones</th>
                                     </tr>
                                 </thead>
@@ -76,6 +97,7 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
                                     <tr>
                                         <td><?= htmlspecialchars($pnf['codigo']) ?></td>
                                         <td><?= htmlspecialchars($pnf['nombre']) ?></td>
+                                        <td><?= htmlspecialchars($pnf['aldea_nombre']) ?></td>
                                         <td class="acciones text-center">
                                            
                                        <button type="button"
@@ -113,8 +135,8 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
                 <ul class="list-group">
                     <li class="list-group-item list-group-item-primary"><?= htmlspecialchars($pnf['codigo']) ?></li>
                     <li class="list-group-item">Nombre: <?= htmlspecialchars($pnf['nombre']) ?></li>
+                    <li class="list-group-item">Aldea: <?= htmlspecialchars($pnf['aldea_nombre']) ?></li>
                     <li class="list-group-item">Descripcion: <?= htmlspecialchars($pnf['descripcion']) ?></li>
-                
                 </ul>
             </div>
             <div class="modal-footer">

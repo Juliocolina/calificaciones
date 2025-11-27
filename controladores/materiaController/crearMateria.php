@@ -15,41 +15,48 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-// 1. Recibir y limpiar datos (Ajustado a tu estructura SQL)
-// CRÍTICO: duracion es NOT NULL en tu BD, debe ser tratada como obligatoria.
-$pnf_id      = intval($_POST['pnf_id'] ?? 0); // Convertir a int para validar
-$nombre      = trim($_POST['nombre'] ?? '');
-$codigo      = trim($_POST['codigo'] ?? ''); // NULLABLE
-$creditos    = intval($_POST['creditos'] ?? 0); // Convertir a int para validar
-$duracion    = trim($_POST['duracion'] ?? ''); // OBLIGATORIO
-$descripcion = trim($_POST['descripcion'] ?? ''); // NULLABLE
+// 1. Recibir y limpiar datos
+$pnf_id         = intval($_POST['pnf_id'] ?? 0);
+$nombre         = trim($_POST['nombre'] ?? '');
+$codigo         = trim($_POST['codigo'] ?? '');
+$creditos       = intval($_POST['creditos'] ?? 0);
+$duracion       = trim($_POST['duracion'] ?? ''); // Campo original
 
-// 2. Validación de campos obligatorios y numéricos
-// Aseguramos que los IDs y Créditos sean mayores que cero
+$descripcion    = trim($_POST['descripcion'] ?? '');
+
+// 2. Validación de campos obligatorios
 if ($pnf_id <= 0 || empty($nombre) || $creditos <= 0 || empty($duracion)) {
     redirigir('error', 'Faltan campos obligatorios o son inválidos (PNF, Nombre, Créditos o Duración).', $redirect_view);
     exit;
 }
 
-// Validación de duracion contra el ENUM de la BD
-$duraciones_validas = ['anual', 'semestral', 'trimestral', 'intensivo'];
-if (!in_array($duracion, $duraciones_validas)) {
-    redirigir('error', 'El valor de Duración no es válido. Opciones: anual, semestral, trimestral, intensivo.', $redirect_view);
+// Validación de duracion
+$tipos_duracion_validos = ['trimestral', 'bimestral', 'anual'];
+if (!in_array($duracion, $tipos_duracion_validos)) {
+    redirigir('error', 'La duración no es válida. Opciones: trimestral, bimestral, anual.', $redirect_view);
     exit;
 }
 
-// 3. Verificar duplicado por Nombre (CRÍTICO: El índice UNIQUE está en `nombre`)
+// 3. Verificar duplicado por Nombre y Código
 try {
+    // Verificar nombre duplicado
     $verificar = $conn->prepare("SELECT id FROM materias WHERE nombre = ?");
     $verificar->execute([$nombre]);
-    
-    // NOTA: Tu base de datos no tiene UNIQUE KEY en `codigo`, solo en `nombre`.
-    // Por seguridad, si el código no es NULL, también podemos verificarlo, pero
-    // priorizamos la validación de la regla UNIQUE de la BD.
     
     if ($verificar->fetch()) {
         redirigir('error', 'Ya existe una materia registrada con ese nombre.', $redirect_view);
         exit;
+    }
+    
+    // Verificar código duplicado si no está vacío
+    if (!empty($codigo)) {
+        $verificar_codigo = $conn->prepare("SELECT id FROM materias WHERE codigo = ?");
+        $verificar_codigo->execute([$codigo]);
+        
+        if ($verificar_codigo->fetch()) {
+            redirigir('error', 'Ya existe una materia registrada con ese código.', $redirect_view);
+            exit;
+        }
     }
 } catch (PDOException $e) {
     redirigir('error', 'Error al validar duplicados en la base de datos.', $redirect_view);
@@ -66,15 +73,15 @@ try {
     $exito = $insertar->execute([
         $pnf_id, 
         $nombre, 
-        empty($codigo) ? NULL : $codigo, // Insertar NULL si está vacío
+        empty($codigo) ? NULL : $codigo,
         $creditos, 
         $duracion, 
-        empty($descripcion) ? NULL : $descripcion // Insertar NULL si está vacío
+        empty($descripcion) ? NULL : $descripcion,
     ]);
     
     if ($exito) {
         // Redirigir a la lista de materias (vista de éxito)
-        redirigir('exito', 'Materia creada exitosamente: ' . $nombre, 'materias/verMaterias.php');
+        redirigir('exito', 'Materia creada exitosamente: ' . $nombre, 'materias/materiasPorPnf.php');
     } else {
         // Error de ejecución sin excepción (raro en PDO, pero posible)
         redirigir('error', 'No se pudo crear la materia.', $redirect_view);

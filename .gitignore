@@ -1,0 +1,28 @@
+# Archivos de configuración sensibles
+.env
+.env.production
+.env.local
+
+# Archivos de prueba y debug
+debug_*.php
+test_*.php
+database/debug_*.php
+database/ejecutar_*.php
+database/migrate_*.php
+database/verificar_*.php
+
+# Documentación de desarrollo
+*.md
+*.txt
+FUNCIONAMIENTO_SISTEMA.txt
+una validacio.txt
+
+# Carpetas de prueba
+ayuda/
+database/
+
+# Archivos de base de datos
+*.sql
+
+# Archivos temporales
+subir_Proyecto

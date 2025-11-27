@@ -1,7 +1,7 @@
 <?php
 session_start();
-
    /*
+
 
 function base_url() {
     $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
@@ -9,7 +9,8 @@ function base_url() {
     return $protocolo . $host . '/';
 }
 
-*/
+ */
+
 
 //Verifica si hay una sesión activa
 function base_url() {
@@ -21,11 +22,12 @@ function base_url() {
     // Si está en la raíz del dominio, $root_folder será el archivo, no la carpeta
     $carpeta = ($root_folder !== basename($script_name)) ? '/' . $root_folder . '/' : '/';
     return $protocolo . $host . $carpeta;
-} 
+}
+
 
 
 function verificarSesion() {
-    if (!isset($_SESSION['usuario']) || !isset($_SESSION['usuario']['id'])) {
+    if (!isset($_SESSION['usuario_id']) || !isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
         // Redirige a la página de inicio de sesión si no hay sesión activa
         header("Location: " . base_url() . "index.php?error=sesion");
         exit;
@@ -118,4 +120,14 @@ function redirigir($tipo, $mensaje, $vista = "home.php") {
     // 3. Ejecutar la redirección
     header("Location: " . $url_final);
     exit;
+}
+
+function tiempoRestanteSesion() {
+    if (!isset($_SESSION['last_activity'])) {
+        return 0;
+    }
+    
+    $tiempo_transcurrido = time() - $_SESSION['last_activity'];
+    $tiempo_restante = 1800 - $tiempo_transcurrido; // 30 minutos = 1800 segundos
+    return max(0, round($tiempo_restante / 60)); // en minutos
 }

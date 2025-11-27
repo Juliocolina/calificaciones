@@ -55,6 +55,7 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' | ' . $defaultTitle : $defaultTi
 
                     <?php if ($_SESSION['rol'] === 'admin'): ?>
                         <li><a href="<?= base_url() ?>vistas/usuarios/miPerfil.php"><i class="menu-icon fa fa-user"></i> Mi Perfil</a></li>
+                        <li><a href="<?= base_url() ?>vistas/usuarios/configurarSeguridad.php"><i class="menu-icon fa fa-shield"></i> Preguntas de Seguridad</a></li>
                         
                         <li class="menu-item-has-children dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -69,51 +70,62 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' | ' . $defaultTitle : $defaultTi
                         
                         <li class="menu-item-has-children dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="menu-icon fa fa-cogs"></i>Configuración</a>
+                                <i class="menu-icon fa fa-cogs"></i>Administracion</a>
                             <ul class="sub-menu children dropdown-menu">
                                 <li><a href="<?= base_url() ?>vistas/aldeas/verAldeas.php"> Aldeas</a></li>
                                 <li><a href="<?= base_url() ?>vistas/pnfs/verPnfs.php">PNFs</a></li>
                                 <li><a href="<?= base_url() ?>vistas/trayectos/verTrayectos.php">Trayectos</a></li>
                                 <li><a href="<?= base_url() ?>vistas/trimestres/verTrimestres.php">Trimestres</a></li>
-                                <li><a href="<?= base_url() ?>vistas/materias/verMaterias.php">Materias</a></li>
+                                <li><a href="<?= base_url() ?>vistas/materias/materiasPorPnf.php">Materias</a></li>
                             </ul>
                         </li>
                         
-                        <li><a href="<?= base_url() ?>vistas/reportes.php"><i class="menu-icon fa fa-bar-chart"></i> Reportes</a></li>
+
                         
-                        <li><a href="<?= base_url() ?>vistas/ofertas_academicas/verOfertas.php"><i class="menu-icon fa fa-graduation-cap"></i> Ofertas Académicas</a></li>
+                        <li><a href="<?= base_url() ?>vistas/secciones/verSecciones.php"><i class="menu-icon fa fa-th-list"></i> Secciones</a></li>
                         
-                        <li><a href="<?= base_url() ?>vistas/calificaciones/consultarCalificaciones.php"><i class="menu-icon fa fa-tasks"></i>Calificaciones</a></li>
+                        <li class="menu-item-has-children dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="menu-icon fa fa-user-plus"></i>Inscripciones</a>
+                            <ul class="sub-menu children dropdown-menu">
+                                <li><a href="<?= base_url() ?>vistas/inscripciones/inscribirEnSecciones.php">Inscribir Estudiantes</a></li>
+                                <li><a href="<?= base_url() ?>vistas/inscripciones/gestionarInscripciones.php">Gestionar Inscripciones</a></li>
+                            </ul>
+                        </li>
+                        
+
 
                     <?php elseif ($_SESSION['rol'] === 'coordinador'): ?>
                         <li><a href="<?= base_url() ?>vistas/usuarios/miPerfil.php"><i class="menu-icon fa fa-user"></i> Mi Perfil</a></li>
+                        <li><a href="<?= base_url() ?>vistas/usuarios/configurarSeguridad.php"><i class="menu-icon fa fa-shield"></i> Preguntas de Seguridad</a></li>
                         <li><a href="<?= base_url() ?>vistas/estudiantes/verEstudiantes.php"><i class="menu-icon fa fa-users"></i> Estudiantes</a></li>
                         <li><a href="<?= base_url() ?>vistas/profesores/verProfesores.php"><i class="menu-icon fa fa-address-card"></i> Profesores</a></li>
                         <li><a href="<?= base_url() ?>vistas/ofertas_academicas/verOfertas.php"><i class="menu-icon fa fa-graduation-cap"></i> Ofertas Académicas</a></li>
+                        
+                        <li><a href="<?= base_url() ?>vistas/secciones/verSecciones.php"><i class="menu-icon fa fa-th-list"></i> Secciones</a></li>
                         
                         <li class="menu-item-has-children dropdown">
                             <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="menu-icon fa fa-tasks"></i>Gestión Académica</a>
                             <ul class="sub-menu children dropdown-menu">
+                                <li><a href="<?= base_url() ?>vistas/inscripciones/inscribirEnSecciones.php">Inscribir Estudiantes</a></li>
                                 <li><a href="<?= base_url() ?>vistas/inscripciones/gestionarInscripciones.php">Gestionar Inscripciones</a></li>
-                                <li><a href="<?= base_url() ?>vistas/calificaciones/consultarCalificaciones.php">Consultar Calificaciones</a></li>
+
                             </ul>
                         </li>
                         
+
+                        
                     <?php elseif ($_SESSION['rol'] === 'profesor'): ?>
-                        <li><a href="<?= base_url() ?>vistas/usuarios/miPerfil.php"><i class="menu-icon fa fa-user"></i> Mi Perfil</a></li>                        
-                    <li class="menu-item-has-children dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                         <i class="menu-icon fa fa-graduation-cap"></i>Mis Clases</a>
-                            <ul class="sub-menu children dropdown-menu">
-                                <li><a href="<?= base_url() ?>vistas/inscripciones/misEstudiantesInscritos.php"> Mis Estudiantes Inscritos</a></li>
-                                <li><a href="<?= base_url() ?>vistas/calificaciones/cargarNotas.php"> Cargar Notas</a></li>
-                             </ul>
-                    </li>                        
+                        <li><a href="<?= base_url() ?>vistas/usuarios/miPerfil.php"><i class="menu-icon fa fa-user"></i> Mi Perfil</a></li>
+                        <li><a href="<?= base_url() ?>vistas/usuarios/configurarSeguridad.php"><i class="menu-icon fa fa-shield"></i> Preguntas de Seguridad</a></li>
+                        <li><a href="<?= base_url() ?>vistas/calificaciones/cargarNotasFinal.php"><i class="menu-icon fa fa-edit"></i> Registrar Notas</a></li>
+                        <li><a href="<?= base_url() ?>vistas/reportes/actaCalificaciones.php"><i class="menu-icon fa fa-file-text"></i> Acta de Calificaciones</a></li>                        
                     <?php elseif ($_SESSION['rol'] === 'estudiante'): ?>
                         <li><a href="<?= base_url() ?>vistas/usuarios/miPerfil.php"><i class="menu-icon fa fa-user"></i> Mi Perfil</a></li>
-                        <li><a href="<?= base_url() ?>vistas/inscripciones/misInscripciones.php"><i class="menu-icon fa fa-list"></i> Mis Materias</a></li>
-                        <li><a href="<?= base_url() ?>vistas/calificaciones/misCalificaciones.php"><i class="menu-icon fa fa-list"></i> Mis Notas</a></li>
+                        <li><a href="<?= base_url() ?>vistas/usuarios/configurarSeguridad.php"><i class="menu-icon fa fa-shield"></i> Preguntas de Seguridad</a></li>
+                        <li><a href="<?= base_url() ?>vistas/estudiantes/misMaterias.php"><i class="menu-icon fa fa-graduation-cap"></i> Mis Materias</a></li>
+                        <li><a href="<?= base_url() ?>vistas/estudiantes/generarHistorialPDF.php" target="_blank"><i class="menu-icon fa fa-file-pdf-o"></i> Historial Académico</a></li>
                     <?php endif; ?>
                     
                     <li>
@@ -127,9 +139,44 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' | ' . $defaultTitle : $defaultTi
         <header id="header" class="header">
             <div class="top-left">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="home.php"><img src="<?= base_url() ?>images/logo_misionsucre.png" alt="Logo" style="max-height:50px;">SICAN</a>
+                    <a class="navbar-brand" href="<?= base_url() ?>vistas/home.php"><img src="<?= base_url() ?>images/logo_misionsucre.png" alt="Logo" style="max-height:50px;">SICAN</a>
                     <a id="menuToggle" class="menutoggle"><i class="fa fa-bars"></i></a>
                 </div>
             </div>
+            <div class="top-right">
+                <div class="header-menu">
+                    <div class="user-area dropdown float-right">
+                        <span class="badge badge-info mr-2" id="tiempo-sesion" title="Tiempo restante de sesión">
+                            <i class="fa fa-clock-o"></i> <span id="minutos-restantes"><?= tiempoRestanteSesion() ?></span>min
+                        </span>
+                        <a href="<?= base_url() ?>controladores/salir.php" class="btn btn-sm btn-outline-danger" title="Cerrar Sesión">
+                            <i class="fa fa-sign-out"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </header>
+        
+        <script>
+        // Actualizar tiempo de sesión cada minuto
+        setInterval(function() {
+            let minutos = parseInt(document.getElementById('minutos-restantes').textContent);
+            if (minutos > 0) {
+                minutos--;
+                document.getElementById('minutos-restantes').textContent = minutos;
+                
+                // Cambiar color cuando quedan menos de 10 minutos
+                if (minutos <= 10) {
+                    document.getElementById('tiempo-sesion').className = 'badge badge-warning mr-2';
+                }
+                if (minutos <= 5) {
+                    document.getElementById('tiempo-sesion').className = 'badge badge-danger mr-2';
+                }
+                if (minutos <= 0) {
+                    alert('Tu sesión ha expirado. Serás redirigido al login.');
+                    window.location.href = '<?= base_url() ?>index.php';
+                }
+            }
+        }, 60000); // Cada 60 segundos
+        </script>
         <?php require_once __DIR__ . '/../alerta/alerta.php'; ?>

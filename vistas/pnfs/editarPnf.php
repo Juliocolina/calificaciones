@@ -1,20 +1,27 @@
 <?php
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+verificarSesion();
+verificarRol(['admin']);
 require_once __DIR__ . '/../../models/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 $conn = conectar();
 
 // 1. Validar que se recibió un ID válido para editar
-if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
+$id = $_POST['id'] ?? $_GET['id'] ?? null;
+if (!$id || !is_numeric($id)) {
     echo "<div class='alert alert-danger'>ID de PNF inválido.</div>";
     exit;
 }
 
-$id = $_POST['id'];
+$id = intval($id);
 
 // 2. Consultar los datos del PNF de la base de datos
-$stmt = $conn->prepare("SELECT nombre, codigo, descripcion FROM pnfs WHERE id = ?");
+$stmt = $conn->prepare("SELECT p.nombre, p.codigo, p.descripcion, p.aldea_id, a.nombre as aldea_nombre FROM pnfs p JOIN aldeas a ON p.aldea_id = a.id WHERE p.id = ?");
 $stmt->execute([$id]);
 $pnf = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// Obtener todas las aldeas para el selector
+$aldeas = $conn->query("SELECT id, nombre FROM aldeas ORDER BY nombre")->fetchAll(PDO::FETCH_ASSOC);
 
 if (!$pnf) {
     echo "<div class='alert alert-warning'>PNF no encontrado.</div>";
@@ -79,6 +86,18 @@ if (!$pnf) {
                                 <tr>
                                     <th><label for="codigo"><i class="fa fa-barcode"></i> Código del PNF</label></th>
                                     <td><input type="text" name="codigo" id="codigo" class="form-control" required value="<?= htmlspecialchars($pnf['codigo']) ?>"></td>
+                                </tr>
+                                <tr>
+                                    <th><label for="aldea_id"><i class="fa fa-university"></i> Aldea</label></th>
+                                    <td>
+                                        <select name="aldea_id" id="aldea_id" class="form-control" required>
+                                            <?php foreach ($aldeas as $aldea): ?>
+                                                <option value="<?= $aldea['id'] ?>" <?= ($pnf['aldea_id'] == $aldea['id']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($aldea['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th><label for="descripcion"><i class="fa fa-align-left"></i> Descripción (opcional)</label></th>

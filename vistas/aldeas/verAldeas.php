@@ -77,27 +77,41 @@ require_once __DIR__ . '/../../controladores/aldeaController/verAldeas.php';
                                         <td><?= htmlspecialchars($aldea['codigo']) ?></td>
                                         <td><?= htmlspecialchars($aldea['nombre']) ?></td>
                                         <td class="acciones text-center">
-                                           
-                                       <button type="button"
-                                        class="btn btn-sm btn-outline-info"
-                                        title="Ver"
-                                        data-toggle="modal"
-                                        data-target="#modalProfesor<?= $aldea['id'] ?>">
-                                       <i class="fa fa-eye"></i>
-                                       </button>
-
-                                        <form action="editarAldea.php" method="POST" style="display: inline-block; margin: 0; padding: 0;">
-                                                <input type="hidden" name="id" value="<?= htmlspecialchars($aldea['id']) ?>">
-                                            <button type="submit" class="btn btn-sm btn-outline-primary mx-1" title="Editar aldea">
-                                                <i class="fa fa-edit"></i>
-                                            </button>
-                                        </form>
-                                       <button class="btn btn-sm btn-outline-danger mx-1" 
-                                               data-toggle="modal" 
-                                               data-target="#modalEliminar<?= $aldea['id'] ?>" 
-                                               title="Eliminar">
-                                            <i class="fa fa-trash"></i>
-                                        </button>
+                                            <div class="btn-group" role="group">
+                                                <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-toggle="dropdown">
+                                                    Acciones
+                                                </button>
+                                                <div class="dropdown-menu">
+                                                    <button type="button" class="dropdown-item" 
+                                                            data-toggle="modal" 
+                                                            data-target="#modalProfesor<?= $aldea['id'] ?>">
+                                                        Ver Detalles
+                                                    </button>
+                                                    <a class="dropdown-item" href="../pnfs/verPnfs.php?aldea_id=<?= $aldea['id'] ?>">
+                                                        Ver PNFs
+                                                    </a>
+                                                    <a class="dropdown-item" href="../materias/materiasPorPnf.php?aldea_id=<?= $aldea['id'] ?>">
+                                                        Ver Materias
+                                                    </a>
+                                                    <?php if ($_SESSION['rol'] === 'admin'): ?>
+                                                    <a class="dropdown-item" href="../ofertas_academicas/crearOferta.php?aldea_id=<?= $aldea['id'] ?>">
+                                                        Crear Oferta
+                                                    </a>
+                                                    <div class="dropdown-divider"></div>
+                                                    <form action="editarAldea.php" method="POST" style="display: inline-block; width: 100%;">
+                                                        <input type="hidden" name="id" value="<?= htmlspecialchars($aldea['id']) ?>">
+                                                        <button type="submit" class="dropdown-item">
+                                                            Editar Aldea
+                                                        </button>
+                                                    </form>
+                                                    <button class="dropdown-item text-danger" 
+                                                            data-toggle="modal" 
+                                                            data-target="#modalEliminar<?= $aldea['id'] ?>">
+                                                        Eliminar
+                                                    </button>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
 
                                             <!-- Modal Ver Detalles -->
 <div class="modal fade" id="modalProfesor<?= $aldea['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="modalProfesorLabel<?= $profesor['id'] ?>" aria-hidden="true">

@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 
+verificarRol(['admin']);
+
 $conn = conectar();
 if (!$conn) {
     redirigir('error', 'No se pudo establecer conexión con la base de datos.', 'estudiantes/crearEstudiante.php');
@@ -20,6 +22,22 @@ $apellido = trim($_POST['apellido'] ?? '');
 $fecha_nacimiento = trim($_POST['fecha_nacimiento'] ?? '');
 $correo = trim($_POST['correo'] ?? '');
 $telefono = trim($_POST['telefono'] ?? '');
+
+// Validaciones de formato
+if (!is_numeric($cedula) || strlen($cedula) < 7) {
+    redirigir('error', 'La cédula debe ser numérica y tener al menos 7 dígitos.', 'estudiantes/crearEstudiante.php');
+    exit;
+}
+
+if (!filter_var($correo, FILTER_VALIDATE_EMAIL)) {
+    redirigir('error', 'El formato del correo electrónico no es válido.', 'estudiantes/crearEstudiante.php');
+    exit;
+}
+
+if (!preg_match('/^[0-9+\-\s()]{10,15}$/', $telefono)) {
+    redirigir('error', 'El formato del teléfono no es válido.', 'estudiantes/crearEstudiante.php');
+    exit;
+}
 $direccion = trim($_POST['direccion'] ?? '');
 $nacionalidad = trim($_POST['nacionalidad'] ?? 'Venezolano');
 $genero = trim($_POST['genero'] ?? 'Masculino');

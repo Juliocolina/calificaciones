@@ -1,38 +1,158 @@
-<?php 
+<?php
+require_once '../config/conexion.php';
 require_once '../controladores/hellpers/auth.php';
+
 verificarRol(['admin', 'coordinador']);
-require_once '../models/header.php'; ?>
-<!-- Content -->
+require_once '../models/header.php';
+
+$rol = $_SESSION['rol'];
+?>
+
 <div class="content">
     <div class="animated fadeIn">
         <div class="row justify-content-center">
-            <div class="col-lg-8">
-                <div class="card mt-5">
-                    <div class="card-header text-center">
-                        <h2 class="card-title">Reportes del Sistema</h2>
+            <div class="col-lg-10">
+                <div class="card shadow">
+                    <div class="card-header bg-info text-white text-center">
+                        <h3 class="mb-0">
+                            <i class="fa fa-bar-chart"></i> Centro de Reportes
+                        </h3>
+                        <p class="mb-0">Seleccione el reporte que desea generar</p>
                     </div>
+                    
                     <div class="card-body">
-                        <img src="../images/logo_misionsucre.png" alt="Misión Sucre" style="max-width:100px; margin-bottom:20px;" class="d-block mx-auto">
-                        <p class="text-center">
-                            Consulta y descarga reportes de notas, estudiantes y actividades realizadas en las aldeas universitarias de <strong>Misión Sucre</strong>.
-                        </p>
-                        <hr>
-                        <h5 class="text-center">Selecciona el tipo de reporte</h5>
-                        <div class="d-flex flex-column align-items-center">
-                            <a href="reportes/reporteEstudiantes.php" class="btn btn-primary m-2 w-75"><i class="fa fa-file-pdf"></i> Reporte Estudiantes</a>
-                            <a href="reportes/reporteCalificaciones.php" class="btn btn-success m-2 w-75"><i class="fa fa-chart-line"></i> Reporte Calificaciones</a>
-                            <a href="reportes/reporteProfesores.php" class="btn btn-warning m-2 w-75"><i class="fa fa-users"></i> Reporte Profesores</a>
-                            <a href="reportes/reporteGraduados.php" class="btn btn-info m-2 w-75"><i class="fa fa-graduation-cap"></i> Reporte Graduados</a>
-                            <a href="reportes/reporteInscripciones.php" class="btn btn-dark m-2 w-75"><i class="fa fa-list-alt"></i> Reporte Inscripciones</a>
+                        <div class="row">
+                            
+                            <?php if ($rol === 'coordinador'): ?>
+                                <!-- Reportes para Coordinadores -->
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-primary">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-users fa-3x text-primary mb-3"></i>
+                                            <h5 class="card-title">Aprobados y Reprobados</h5>
+                                            <p class="card-text">Consultar estudiantes aprobados y reprobados por materia y período</p>
+                                            <a href="reportes/listadoAprobadosReprobados.php" class="btn btn-primary">
+                                                <i class="fa fa-eye"></i> Ver Reporte
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-danger">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-file-pdf-o fa-3x text-danger mb-3"></i>
+                                            <h5 class="card-title">Lista de Estudiantes PDF</h5>
+                                            <p class="card-text">Generar listado oficial de estudiantes por aldea y PNF</p>
+                                            <a href="reportes/listaEstudiantes.php" class="btn btn-danger">
+                                                <i class="fa fa-file-pdf-o"></i> Generar PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-address-card fa-3x text-success mb-3"></i>
+                                            <h5 class="card-title">Nómina de Profesores PDF</h5>
+                                            <p class="card-text">Generar nómina de profesores con materias y estudiantes</p>
+                                            <a href="reportes/nominaProfesores.php" class="btn btn-success">
+                                                <i class="fa fa-file-pdf-o"></i> Generar PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <div class="card border-warning">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-graduation-cap fa-3x text-warning mb-3"></i>
+                                            <h5 class="card-title">Reporte de Graduados</h5>
+                                            <p class="card-text">Consultar y generar PDF de estudiantes graduados (TSU/Licenciado)</p>
+                                            <a href="reportes/reporteGraduados.php" class="btn btn-warning">
+                                                <i class="fa fa-graduation-cap"></i> Ver Reporte
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                
+                            <?php elseif ($rol === 'admin'): ?>
+                                <!-- Reportes para Administradores -->
+                                <div class="col-md-4 mb-4">
+                                    <div class="card border-danger">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-file-pdf-o fa-3x text-danger mb-3"></i>
+                                            <h5 class="card-title">Lista de Estudiantes PDF</h5>
+                                            <p class="card-text">Generar listado oficial de estudiantes</p>
+                                            <a href="reportes/listaEstudiantes.php" class="btn btn-danger">
+                                                <i class="fa fa-file-pdf-o"></i> Generar PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-4">
+                                    <div class="card border-success">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-address-card fa-3x text-success mb-3"></i>
+                                            <h5 class="card-title">Nómina de Profesores PDF</h5>
+                                            <p class="card-text">Generar nómina de profesores</p>
+                                            <a href="reportes/nominaProfesores.php" class="btn btn-success">
+                                                <i class="fa fa-file-pdf-o"></i> Generar PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-4">
+                                    <div class="card border-primary">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-users fa-3x text-primary mb-3"></i>
+                                            <h5 class="card-title">Aprobados y Reprobados</h5>
+                                            <p class="card-text">Consultar estudiantes por estado académico</p>
+                                            <a href="reportes/listadoAprobadosReprobados.php" class="btn btn-primary">
+                                                <i class="fa fa-eye"></i> Ver Reporte
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-4 mb-4">
+                                    <div class="card border-warning">
+                                        <div class="card-body text-center">
+                                            <i class="fa fa-graduation-cap fa-3x text-warning mb-3"></i>
+                                            <h5 class="card-title">Reporte de Graduados</h5>
+                                            <p class="card-text">Consultar y generar PDF de graduados</p>
+                                            <a href="reportes/reporteGraduados.php" class="btn btn-warning">
+                                                <i class="fa fa-graduation-cap"></i> Ver Reporte
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                            <?php endif; ?>
+                            
+                        </div>
+                        
+                        <div class="alert alert-info mt-4">
+                            <i class="fa fa-info-circle"></i> 
+                            <strong>Información:</strong> Los reportes se generan en tiempo real con los datos más actualizados del sistema.
                         </div>
                     </div>
-                    <div class="card-footer text-muted text-center">
-                        Los reportes pueden ser descargados en formato PDF o Excel para su análisis y respaldo.
+                    
+                    <div class="card-footer text-center">
+                        <a href="home.php" class="btn btn-secondary">
+                            <i class="fa fa-arrow-left"></i> Volver al Inicio
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- /.content -->
+
 <?php require_once '../models/footer.php'; ?>
