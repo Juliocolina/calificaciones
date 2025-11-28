@@ -103,7 +103,7 @@ foreach ($datos as $row) {
     }
 }
 
-require_once '../../models/header.php';
+require_once '../../includes/header.php';
 ?>
 
 <div class="content">
@@ -287,4 +287,4 @@ $(document).ready(function() {
 });
 </script>
 
-<?php require_once '../../models/footer.php'; ?>
+<?php require_once '../../includes/footer.php'; ?>

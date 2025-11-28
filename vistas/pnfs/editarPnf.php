@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarSesion();
 verificarRol(['admin']);
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 $conn = conectar();
 
@@ -120,4 +120,4 @@ if (!$pnf) {
 </div>
 </body>
 </html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

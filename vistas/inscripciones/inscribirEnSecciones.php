@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarRol(['admin', 'coordinador']);
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 
 $conn = conectar();
@@ -262,4 +262,4 @@ $(document).ready(function() {
 
 
 
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

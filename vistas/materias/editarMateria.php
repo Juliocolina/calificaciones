@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 $conn = conectar();
 
@@ -170,4 +170,4 @@ $pnfs = $stmt_pnf->fetchAll(PDO::FETCH_ASSOC);
 </div>
 </body>
 </html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

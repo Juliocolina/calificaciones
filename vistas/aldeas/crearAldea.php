@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="container mt-4">
     <?php if (isset($_GET['exito'])): ?>
@@ -86,4 +86,4 @@ require_once __DIR__ . '/../../models/header.php';
         </div>
     </div>
 </div>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

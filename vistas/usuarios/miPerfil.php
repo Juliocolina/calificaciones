@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 $conn = conectar();
 // 2. OBTENER DATOS DEL PERFIL DE FORMA DINÁMICA
@@ -390,4 +390,4 @@ if ($rol === 'estudiante') {
 </div>
 </body>
 </html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

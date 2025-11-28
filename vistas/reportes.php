@@ -3,7 +3,7 @@ require_once '../config/conexion.php';
 require_once '../controladores/hellpers/auth.php';
 
 verificarRol(['admin', 'coordinador']);
-require_once '../models/header.php';
+require_once '../includes/header.php';
 
 $rol = $_SESSION['rol'];
 ?>
@@ -155,4 +155,4 @@ $rol = $_SESSION['rol'];
     </div>
 </div>
 
-<?php require_once '../models/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

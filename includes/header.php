@@ -40,6 +40,8 @@ $pageTitle = isset($pageTitle) ? $pageTitle . ' | ' . $defaultTitle : $defaultTi
         #flotLine5  { height: 105px; }
         #flotBarChart { height: 150px; }
         #cellPaiChart{ height: 160px; }
+        
+
     </style>
     <script src='https://cdn.jsdelivr.net/npm/sweetalert2@11'></script>
     <script src="<?= base_url() ?>assets/js/validaciones.js"></script>

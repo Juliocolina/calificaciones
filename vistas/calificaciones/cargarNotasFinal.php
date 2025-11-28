@@ -2,7 +2,7 @@
 session_start();
 require_once '../../config/conexion.php';
 require_once '../../controladores/hellpers/auth.php';
-require_once '../../models/PaginationHelper.php';
+require_once '../../config/PaginationHelper.php';
 
 verificarSesion();
 
@@ -124,7 +124,7 @@ $periodos = $stmt->fetchAll();
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="breadcrumbs">
         <div class="breadcrumbs-inner">
@@ -331,7 +331,7 @@ $periodos = $stmt->fetchAll();
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 
     <script src="../../assets/js/lib/jquery/jquery.min.js"></script>
     <script src="../../assets/js/lib/bootstrap/js/bootstrap.min.js"></script>

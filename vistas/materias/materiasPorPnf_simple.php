@@ -49,7 +49,7 @@ try {
         }
     }
     
-    require_once '../../models/header.php';
+    require_once '../../includes/header.php';
     
 } catch (Exception $e) {
     die("Error: " . $e->getMessage());
@@ -99,4 +99,4 @@ try {
     </div>
 </div>
 
-<?php require_once '../../models/footer.php'; ?>
+<?php require_once '../../includes/footer.php'; ?>

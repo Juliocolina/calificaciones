@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarRol(['admin']);
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 <div class="container mt-4">
     <?php if (isset($_GET['exito'])): ?>
@@ -135,4 +135,4 @@ document.getElementById('generarPassword').addEventListener('click', function() 
 });
 </script>
 
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

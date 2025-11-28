@@ -38,7 +38,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$materia_id]);
 $profesores_asignados = $stmt->fetchAll();
 
-require_once '../../models/header.php';
+require_once '../../includes/header.php';
 ?>
 
 <div class="content">
@@ -141,4 +141,4 @@ require_once '../../models/header.php';
     </div>
 </div>
 
-<?php require_once '../../models/footer.php'; ?>
+<?php require_once '../../includes/footer.php'; ?>

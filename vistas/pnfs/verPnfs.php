@@ -1,52 +1,10 @@
 <?php
-session_start();
-// Verificar sesión y rol
-if (!isset($_SESSION['usuario_id']) || !in_array($_SESSION['rol'], ['admin', 'coordinador'])) {
-    header("Location: ../../index.php");
-    exit;
-}
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+verificarRol(['admin', 'coordinador']);
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
 ?>
-
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Listado de PNF</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body {
-            background: #f4f6f9;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
-        .acciones a, .acciones button {
-            margin-right: 6px;
-        }
-        .card {
-            margin-top: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(30,60,114,0.12);
-        }
-        .card-header {
-            background: linear-gradient(90deg,#1e3c72,#2a5298);
-            color: #fff;
-            border-radius: 16px 16px 0 0;
-        }
-        .btn-primary {
-            background: #2a5298;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #1e3c72;
-        }
-    </style>
-</head>
-<body>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-11">
@@ -190,6 +148,4 @@ require_once __DIR__ . '/../../controladores/pnfController/verPnfs.php';
         </div>
     </div>
 </div>
-</body>
-</html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

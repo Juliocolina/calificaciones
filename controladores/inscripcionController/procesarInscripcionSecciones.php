@@ -152,31 +152,7 @@ try {
         $stmt->execute([$estudiante_id, $seccion_id, $grupo['id']]);
         $inscripcion_id = $conn->lastInsertId();
         
-        // Calcular número de intento para esta materia
-        $stmt = $conn->prepare("
-            SELECT COUNT(*) + 1 as siguiente_intento
-            FROM historial_intentos 
-            WHERE estudiante_id = ? AND materia_id = ?
-        ");
-        $stmt->execute([$estudiante_id, $materia_info['materia_id']]);
-        $intento_numero = $stmt->fetch()['siguiente_intento'];
-        
-        // Obtener tipo de oferta
-        $stmt = $conn->prepare("
-            SELECT oa.tipo_oferta
-            FROM secciones s
-            JOIN oferta_academica oa ON s.oferta_academica_id = oa.id
-            WHERE s.id = ?
-        ");
-        $stmt->execute([$seccion_id]);
-        $tipo_oferta = $stmt->fetch()['tipo_oferta'];
-        
-        // Registrar en historial de intentos
-        $stmt = $conn->prepare("
-            INSERT INTO historial_intentos (estudiante_id, materia_id, inscripcion_id, intento_numero, tipo_oferta, fecha_intento)
-            VALUES (?, ?, ?, ?, ?, CURDATE())
-        ");
-        $stmt->execute([$estudiante_id, $materia_info['materia_id'], $inscripcion_id, $intento_numero, $tipo_oferta]);
+
         
         $inscripciones_exitosas++;
     }

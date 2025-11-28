@@ -127,7 +127,7 @@ $promedio = $materias_con_nota > 0 ? round($suma_notas / $materias_con_nota, 2) 
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="content">
         <div class="animated fadeIn">
@@ -245,7 +245,7 @@ $promedio = $materias_con_nota > 0 ? round($suma_notas / $materias_con_nota, 2) 
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../../assets/js/lib/bootstrap/js/bootstrap.min.js"></script>

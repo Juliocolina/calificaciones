@@ -1,7 +1,0 @@
-http://localhost/app-calificaciones/actualizar_estudiantes_t1.php
-
-
-
-
-http://localhost/app-calificaciones/limpiar_inscripciones_calificaciones.php
-

@@ -39,7 +39,7 @@ try {
     error_log("Error general en crearOferta.php: " . $e->getMessage());
 }
 
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
 <style>
@@ -286,4 +286,4 @@ $(document).ready(function() {
 });
 </script>
 
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

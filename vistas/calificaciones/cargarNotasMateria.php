@@ -62,7 +62,7 @@ $periodos = $stmt->fetchAll();
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="content">
         <div class="animated fadeIn">
@@ -147,6 +147,6 @@ $periodos = $stmt->fetchAll();
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 </body>
 </html>

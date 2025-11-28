@@ -60,7 +60,7 @@ $anos = $pdo->query("
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="breadcrumbs">
         <div class="breadcrumbs-inner">
@@ -142,7 +142,7 @@ $anos = $pdo->query("
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 
     <script src="../../assets/js/lib/jquery/jquery.min.js"></script>
     <script src="../../assets/js/lib/bootstrap/js/bootstrap.min.js"></script>

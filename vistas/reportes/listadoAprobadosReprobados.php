@@ -160,7 +160,7 @@ if ($aldea_id > 0 && $pnf_id > 0) {
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="breadcrumbs">
         <div class="breadcrumbs-inner">
@@ -392,7 +392,7 @@ if ($aldea_id > 0 && $pnf_id > 0) {
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="../../assets/js/lib/bootstrap/js/bootstrap.min.js"></script>

@@ -48,7 +48,7 @@ if ($_POST) {
 
 <?php
 $pageTitle = "Configurar Preguntas de Seguridad";
-include '../../models/header.php';
+include '../../includes/header.php';
 ?>
 
 <div class="breadcrumbs">
@@ -268,4 +268,4 @@ document.querySelectorAll('input[name^="respuestas"]').forEach(function(input) {
 });
 </script>
 
-<?php include '../../models/footer.php'; ?>
+<?php include '../../includes/footer.php'; ?>

@@ -114,7 +114,7 @@ $periodo_actual = null;
 </head>
 
 <body>
-    <?php include '../../models/header.php'; ?>
+    <?php include '../../includes/header.php'; ?>
 
     <div class="content">
         <div class="animated fadeIn">
@@ -269,6 +269,6 @@ $periodo_actual = null;
         </div>
     </div>
 
-    <?php include '../../models/footer.php'; ?>
+    <?php include '../../includes/footer.php'; ?>
 </body>
 </html>

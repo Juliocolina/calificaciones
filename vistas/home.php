@@ -1,7 +1,7 @@
 <?php
 require_once '../controladores/hellpers/auth.php';
 verificarSesion();
-require_once '../models/header.php';
+require_once '../includes/header.php';
 ?>
 
 <!-- Content -->
@@ -52,4 +52,4 @@ require_once '../models/header.php';
 </div>
 <!-- /.content -->
 
-<?php require_once '../models/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

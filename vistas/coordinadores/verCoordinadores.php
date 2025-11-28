@@ -1,46 +1,35 @@
 <?php
-require_once __DIR__ . '/../../models/header.php';
+$pageTitle = "Gestión de Coordinadores";
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/coordinadorController/verCoordinadores.php';
 ?>
 
-<!doctype html>
-<html lang="es">
-<head>
-    <meta charset="utf-8">
-    <title>Listado de Profesores</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.1.3/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <style>
-        body {
-            background: #f4f6f9;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
-        .acciones a, .acciones button {
-            margin-right: 6px;
-        }
-        .card {
-            margin-top: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(30,60,114,0.12);
-        }
-        .card-header {
-            background: linear-gradient(90deg,#1e3c72,#2a5298);
-            color: #fff;
-            border-radius: 16px 16px 0 0;
-        }
-        .btn-primary {
-            background: #2a5298;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #1e3c72;
-        }
-    </style>
-</head>
-<body>
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+    .acciones a, .acciones button {
+        margin-right: 6px;
+    }
+    .card {
+        margin-top: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(30,60,114,0.12);
+    }
+    .card-header {
+        background: linear-gradient(90deg,#1e3c72,#2a5298);
+        color: #fff;
+        border-radius: 16px 16px 0 0;
+    }
+    .btn-primary {
+        background: #2a5298;
+        border: none;
+    }
+    .btn-primary:hover {
+        background: #1e3c72;
+    }
+</style>
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-11">
@@ -130,7 +119,7 @@ require_once __DIR__ . '/../../controladores/coordinadorController/verCoordinado
                                               <div class="modal-dialog" role="document">
                                                 <div class="modal-content">
                                                   <div class="modal-header bg-danger text-white">
-                                                    <h5 class="modal-title" id="modalLabel<?= $coordinador['id'] ?>">Eliminar Profesor</h5>
+                                                    <h5 class="modal-title" id="modalLabel<?= $coordinador['id'] ?>">Eliminar Coordinador</h5>
                                                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar">
                                                       <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -159,7 +148,7 @@ require_once __DIR__ . '/../../controladores/coordinadorController/verCoordinado
                             </table>
                         </div>
                     <?php else: ?>
-                        <div class="alert alert-info text-center">No hay profesores registrados.</div>
+                        <div class="alert alert-info text-center">No hay coordinadores registrados.</div>
                     <?php endif; ?>
                 </div>
 
@@ -170,6 +159,5 @@ require_once __DIR__ . '/../../controladores/coordinadorController/verCoordinado
         </div>
     </div>
 </div>
-</body>
-</html>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

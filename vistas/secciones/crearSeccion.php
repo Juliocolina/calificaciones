@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarSesion();
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../config/conexion.php';
 
 $conn = conectar();
@@ -130,7 +130,7 @@ $ofertas = $stmt->fetchAll(PDO::FETCH_ASSOC);
     </div>
 </div>
 
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
 
 <script>
 $(document).ready(function() {

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarRol(['admin', 'coordinador']); // Solo admin y coordinador pueden ver ofertas
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php'; 
 ?>
 <div class="container mt-4"> <div class="row justify-content-center">
@@ -163,4 +163,4 @@ require_once __DIR__ . '/../../controladores/ofertaController/verOfertas.php';
         </div>
     </div>
 </div>
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>

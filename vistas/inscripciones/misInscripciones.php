@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 verificarRol(['estudiante']);
 require_once __DIR__ . '/../../controladores/inscripcionController/misInscripciones.php';
-require_once __DIR__ . '/../../models/header.php';
+require_once __DIR__ . '/../../includes/header.php';
 ?>
 
 <div class="container mt-4">
@@ -126,4 +126,4 @@ require_once __DIR__ . '/../../models/header.php';
     </div>
 </div>
 
-<?php require_once __DIR__ . '/../../models/footer.php'; ?>
+<?php require_once __DIR__ . '/../../includes/footer.php'; ?>
