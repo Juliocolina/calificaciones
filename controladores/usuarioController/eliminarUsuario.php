@@ -1,29 +1,39 @@
 <?php
-
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../modelos/UsuarioModelSimple.php';
+
+verificarRol(['admin']);
+
 $conn = conectar();
-
-// Validar que se recibió el ID
-if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
-    redirigir('error', 'ID inválido.', 'usuarios/verUsuario.php');
+if (!$conn) {
+    redirigir('error', 'No se pudo conectar con la base de datos.', 'usuarios/verUsuario.php');
+    exit;
 }
 
-$id = intval($_POST['id']);
-try {
-    // Preparar y ejecutar la consulta de eliminación
-    $stmt = $conn->prepare("DELETE FROM usuarios WHERE id = :id");
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-    $stmt->execute();
+$usuarioModel = new UsuarioModelSimple($conn);
 
-    // Verificar si se eliminó algún registro
-    if ($stmt->rowCount() > 0) {
-        redirigir('success', 'Usuario eliminado exitosamente.', 'usuarios/verUsuario.php');
-    } else {
-        redirigir('error', 'No se encontró el usuario o ya fue eliminado.', 'usuarios/verUsuario.php');
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validar ID
+    if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
+        redirigir('error', 'ID inválido.', 'usuarios/verUsuario.php');
+        exit;
     }
-} catch (PDOException $e) {
-    // Manejar errores de la base de datos
-    redirigir('error', 'Error al eliminar el usuario: ' . $e->getMessage(), 'usuarios/verUsuario.php');
+
+    $id = intval($_POST['id']);
+
+    try {
+        // Eliminar usando el modelo
+        if ($usuarioModel->eliminarUsuario($id)) {
+            redirigir('exito', 'Usuario eliminado exitosamente.', 'usuarios/verUsuario.php');
+        } else {
+            redirigir('error', 'No se encontró el usuario o ya fue eliminado.', 'usuarios/verUsuario.php');
+        }
+
+    } catch (PDOException $e) {
+        redirigir('error', 'Error al eliminar usuario: ' . $e->getMessage(), 'usuarios/verUsuario.php');
+    }
 }
+
+exit;
 

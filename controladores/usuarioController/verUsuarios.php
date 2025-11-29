@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
-require_once __DIR__ . '/../../modelos/TrimestreModel.php';
+require_once __DIR__ . '/../../modelos/UsuarioModelSimple.php';
 
 verificarSesion();
 
@@ -11,11 +11,11 @@ if (!$conn) {
     exit;
 }
 
-$trimestreModel = new TrimestreModel($conn);
+$usuarioModel = new UsuarioModelSimple($conn);
 
 try {
-    $trimestres = $trimestreModel->obtenerTodos();
+    $usuarios = $usuarioModel->obtenerTodos();
 } catch (PDOException $e) {
-    redirigir('error', 'Error al obtener trimestres: ' . $e->getMessage(), 'home.php');
+    redirigir('error', 'Error al obtener usuarios: ' . $e->getMessage(), 'home.php');
     exit;
 }

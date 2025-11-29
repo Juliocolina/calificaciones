@@ -39,6 +39,8 @@ require_once __DIR__ . '/../../controladores/coordinadorController/verCoordinado
                 </div>
 
                 <div class="card-body">
+                    <?php require_once __DIR__ . '/../../includes/mesajes.php'; ?>
+                    
                 <p class="text-center mb-3">
                     <i class="fa fa-info-circle text-info"></i>
                         Lista de coordinadores registrados en el sistema.

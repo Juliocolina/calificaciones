@@ -1,38 +1,38 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../modelos/TrayectoModel.php';
+
+verificarRol(['admin']);
 
 $conn = conectar();
-
-// Verificar método de solicitud
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirigir('error', 'Método no permitido.', 'trayectos/crearTrayecto.php');
+if (!$conn) {
+    redirigir('error', 'No se pudo establecer conexión con la BD.', 'trayectos/crearTrayecto.php');
     exit;
 }
 
-// Recibir y limpiar datos
-$nombre     = trim($_POST['nombre_trayecto'] ?? '');
-$slug     = trim($_POST['slug_trayecto'] ?? '');
-$descripcion = trim($_POST['descripcion'] ?? '');
+$trayectoModel = new TrayectoModel($conn);
 
-// ✅ Validar campos obligatorios
-if (empty($nombre) || empty($slug)) {
-    redirigir('error', 'Por favor, completa todos los campos obligatorios.', 'trayectos/crearTrayecto.php');
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['nombre_trayecto'] ?? '');
+    $slug = trim($_POST['slug_trayecto'] ?? '');
+    $descripcion = trim($_POST['descripcion'] ?? '');
+
+    if (empty($nombre) || empty($slug)) {
+        redirigir('error', 'Todos los campos son obligatorios.', 'trayectos/crearTrayecto.php');
+        exit;
+    }
+
+    try {
+        if ($trayectoModel->crearTrayecto($nombre, $slug, $descripcion)) {
+            redirigir('exito', 'Trayecto creado exitosamente.', 'trayectos/verTrayectos.php');
+        } else {
+            redirigir('error', 'No se pudo crear el trayecto.', 'trayectos/crearTrayecto.php');
+        }
+
+    } catch (PDOException $e) {
+        redirigir('error', 'Error al crear trayecto: ' . $e->getMessage(), 'trayectos/crearTrayecto.php');
+    }
 }
 
-// 🔍 Verificar duplicados por nombre o código
-$verificar = $conn->prepare("SELECT id FROM trayectos WHERE nombre = ? OR slug = ?");
-$verificar->execute([$nombre, $slug]);
-
-if ($verificar->fetch()) {
-    redirigir('error', 'Trayecto ya registrado con ese nombre o código.', 'trayectos/crearTrayecto.php');
-    exit;
-}
-
-// 💾 Insertar nuevo trayecto
-$insertar = $conn->prepare("INSERT INTO trayectos (nombre, slug, descripcion) VALUES (?, ?, ?)");
-$insertar->execute([$nombre, $slug, $descripcion]);
-
-redirigir('exito', 'Registro Exitoso..!', 'trayectos/crearTrayecto.php');
 exit;

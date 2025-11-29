@@ -1,9 +1,17 @@
 <?php
-require_once '../../config/conexion.php';
-$conn = conectar();
+require_once __DIR__ . '/../../config/conexion.php';
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../modelos/AldeaModel.php';
 
-// Consultar todas las aldeas
-$consulta = $conn->prepare("SELECT * FROM aldeas");
-$consulta->execute();
-$aldeas = $consulta->fetchAll(PDO::FETCH_ASSOC);
+verificarRol(['admin']);
+
+$conn = conectar();
+if (!$conn) {
+    redirigir('error', 'No se pudo establecer conexión con la BD.', 'home.php');
+    exit;
+}
+
+// Usar el modelo para obtener las aldeas
+$aldeaModel = new AldeaModel($conn);
+$aldeas = $aldeaModel->obtenerTodas();
 

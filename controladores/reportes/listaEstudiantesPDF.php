@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../config/conexion.php';
 require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../modelos/ReporteModel.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Dompdf\Dompdf;
@@ -19,68 +20,28 @@ if (!$aldea_id || !$pnf_id) {
 
 try {
     $conn = conectar();
+    if (!$conn) {
+        die('Error de conexión a la base de datos');
+    }
+
+    $reporteModel = new ReporteModel($conn);
     
-    // Verificar que coordinador solo acceda a su aldea
+    // Verificar permisos de coordinador
     if ($_SESSION['rol'] === 'coordinador') {
-        $stmt = $conn->prepare("SELECT aldea_id FROM coordinadores WHERE usuario_id = ?");
-        $stmt->execute([$_SESSION['usuario_id']]);
-        $coord_aldea = $stmt->fetchColumn();
+        $coord_aldea = $reporteModel->obtenerAldeaCoordinador($_SESSION['usuario_id']);
         if ($coord_aldea != $aldea_id) {
             die('No tiene permisos para generar reportes de esta aldea');
         }
     }
     
-    // Obtener información de aldea, PNF, trayecto y trimestre
-    $stmt = $conn->prepare("
-        SELECT 
-            a.nombre as aldea_nombre, 
-            p.nombre as pnf_nombre,
-            t.nombre as trayecto_nombre,
-            tr.nombre as trimestre_nombre
-        FROM aldeas a, pnfs p
-        LEFT JOIN trayectos t ON t.id = ?
-        LEFT JOIN trimestres tr ON tr.id = ?
-        WHERE a.id = ? AND p.id = ?
-    ");
-    $stmt->execute([$trayecto_id ?: null, $trimestre_id ?: null, $aldea_id, $pnf_id]);
-    $info = $stmt->fetch();
-    
-    // Construir consulta de estudiantes con filtros opcionales
-    $where_conditions = ["e.aldea_id = ?", "e.pnf_id = ?"];
-    $params = [$aldea_id, $pnf_id];
-    
-    if ($trayecto_id > 0) {
-        $where_conditions[] = "e.trayecto_id = ?";
-        $params[] = $trayecto_id;
+    // Obtener información del reporte
+    $info = $reporteModel->obtenerInfoReporte($aldea_id, $pnf_id, $trayecto_id ?: null, $trimestre_id ?: null);
+    if (!$info) {
+        die('No se encontró información para los parámetros especificados');
     }
-    
-    if ($trimestre_id > 0) {
-        $where_conditions[] = "e.trimestre_id = ?";
-        $params[] = $trimestre_id;
-    }
-    
-    $where_clause = implode(' AND ', $where_conditions);
     
     // Obtener estudiantes
-    $stmt = $conn->prepare("
-        SELECT 
-            u.cedula,
-            u.nombre,
-            u.apellido,
-            e.codigo_estudiante,
-            e.fecha_ingreso,
-            e.estado_academico,
-            t.nombre as trayecto_nombre,
-            tr.nombre as trimestre_nombre
-        FROM estudiantes e
-        JOIN usuarios u ON e.usuario_id = u.id
-        LEFT JOIN trayectos t ON e.trayecto_id = t.id
-        LEFT JOIN trimestres tr ON e.trimestre_id = tr.id
-        WHERE $where_clause
-        ORDER BY u.apellido, u.nombre
-    ");
-    $stmt->execute($params);
-    $estudiantes = $stmt->fetchAll();
+    $estudiantes = $reporteModel->obtenerEstudiantes($aldea_id, $pnf_id, $trayecto_id ?: null, $trimestre_id ?: null);
     
     // Generar HTML
     $html = '

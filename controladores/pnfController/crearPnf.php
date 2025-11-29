@@ -1,45 +1,44 @@
 <?php
-require_once __DIR__ . '/../../controladores/hellpers/auth.php';
 require_once __DIR__ . '/../../config/conexion.php';
-require_once __DIR__ . '/../../config/funciones.php';
+require_once __DIR__ . '/../../controladores/hellpers/auth.php';
+require_once __DIR__ . '/../../modelos/PnfModel.php';
 
-// Verificar sesión y rol admin
-if (!isset($_SESSION['usuario_id']) || $_SESSION['rol'] !== 'admin') {
-    header("Location: ../../index.php");
-    exit;
-}
+verificarRol(['admin']);
 
 $conn = conectar();
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    redirigir('error', 'Método no permitido.', 'pnfs/crearPnf.php');
+if (!$conn) {
+    redirigir('error', 'No se pudo establecer conexión con la BD.', 'pnfs/crearPnf.php');
     exit;
 }
 
-$nombre      = trim($_POST['nombre_pnf'] ?? '');
-$codigo      = trim($_POST['codigo_pnf'] ?? '');
-$aldea_id    = intval($_POST['aldea_id'] ?? 0);
-$descripcion = trim($_POST['descripcion'] ?? 'vacio');
+$pnfModel = new PnfModel($conn);
 
-if (empty($nombre) || empty($codigo) || $aldea_id <= 0) {
-    redirigir('error', 'Por favor, completa todos los campos obligatorios (nombre, código y aldea).', 'pnfs/crearPnf.php');
-    exit;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nombre = trim($_POST['nombre_pnf'] ?? '');
+    $codigo = trim($_POST['codigo_pnf'] ?? '');
+    $aldea_id = intval($_POST['aldea_id'] ?? 0);
+    $descripcion = trim($_POST['descripcion'] ?? '') ?: null;
+
+    if (empty($nombre) || empty($codigo) || $aldea_id <= 0) {
+        redirigir('error', 'Todos los campos obligatorios deben completarse.', 'pnfs/crearPnf.php');
+        exit;
+    }
+
+    try {
+        if ($pnfModel->existePnf($nombre, $codigo)) {
+            redirigir('error', 'Ya existe un PNF con ese nombre o código.', 'pnfs/crearPnf.php');
+            exit;
+        }
+
+        if ($pnfModel->crearPnf($nombre, $codigo, $aldea_id, $descripcion)) {
+            redirigir('exito', 'PNF creado exitosamente.', 'pnfs/verPnfs.php');
+        } else {
+            redirigir('error', 'No se pudo crear el PNF.', 'pnfs/crearPnf.php');
+        }
+
+    } catch (PDOException $e) {
+        redirigir('error', 'Error al crear PNF: ' . $e->getMessage(), 'pnfs/crearPnf.php');
+    }
 }
 
-
-$verificar = $conn->prepare("SELECT id FROM pnfs WHERE nombre = ? OR codigo = ?");
-$verificar->execute([$nombre, $codigo]);
-
-if ($verificar->fetch()) {
-    redirigir('error', 'PNF ya registrado con ese nombre o código.', 'pnfs/crearPnf.php');
-    exit;
-}
-
-$insertar = $conn->prepare("INSERT INTO pnfs (nombre, codigo, aldea_id, descripcion) VALUES (?, ?, ?, ?)");
-if ($insertar->execute([$nombre, $codigo, $aldea_id, $descripcion])) {
-    redirigir('exito', 'PNF creado exitosamente.', 'pnfs/verPnfs.php');
-    exit;
-} else {
-    redirigir('error', 'No se pudo registrar el PNF.', 'pnfs/crearPnf.php');
-    exit;
-}
+exit;
